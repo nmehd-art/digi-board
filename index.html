@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0">
+    <title>HPS DIGI BOARD 2 (3910) - Gestion Réseau et Sécurité | MOHAMMED NAHED</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pcb-royal: #164475;
+            --pcb-royal-deep: #0f3054;
+            --pcb-royal-bright: #1c538f;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: #090d16;
+            color: #f8fafc;
+            font-family: 'Inter', 'Cairo', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .font-mono-tech {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .font-arabic {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* Welcome Screen Animations */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-float {
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+
+        .welcome-grid-bg {
+            background-color: #060a12;
+            background-image:
+                radial-gradient(circle at 50% 20%, rgba(28, 83, 143, 0.35) 0%, transparent 60%),
+                linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 32px 32px, 32px 32px;
+        }
+
+        /* Viewport Pan/Zoom Container */
+        #benchViewport {
+            flex: 1;
+            overflow: auto;
+            background: radial-gradient(circle at 50% 35%, #162133 0%, #070a11 90%);
+            position: relative;
+            cursor: grab;
+            touch-action: pan-x pan-y pinch-zoom;
+        }
+        #benchViewport:active {
+            cursor: grabbing;
+        }
+
+        /* Authentic HPS SystemTechnik Matte Royal-Blue Silkscreen PCB */
+        .hps-pcb {
+            width: 1740px;
+            height: 920px;
+            background-color: var(--pcb-royal);
+            background-image:
+                radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 0),
+                linear-gradient(160deg, #1d5694 0%, #164475 45%, #103258 100%);
+            background-size: 14px 14px, 100% 100%;
+            border: 5px solid #091d33;
+            border-radius: 10px;
+            box-shadow:
+                0 35px 80px rgba(0, 0, 0, 0.9),
+                inset 0 1px 0 rgba(255, 255, 255, 0.28),
+                inset 0 0 45px rgba(7, 21, 38, 0.6);
+            position: relative;
+            transform-origin: top left;
+            margin: 16px;
+        }
+
+        /* Slotted PCB Mounting Screws */
+        .pcb-screw {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #e2e8f0, #94a3b8 65%, #475569);
+            border: 1px solid #1e293b;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.65);
+            z-index: 15;
+        }
+        .pcb-screw::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 2px;
+            right: 2px;
+            height: 2px;
+            background: #334155;
+            transform: translateY(-50%) rotate(32deg);
+        }
+
+        /* Crisp White IEC-60617 Silkscreen Block */
+        .iec-box {
+            position: absolute;
+            border: 1.5px solid rgba(255, 255, 255, 0.92);
+            background: rgba(12, 37, 66, 0.22);
+            border-radius: 2px;
+        }
+
+        .iec-divider {
+            border-bottom: 1.5px solid rgba(255, 255, 255, 0.88);
+        }
+
+        .silk {
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            line-height: 1;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+        }
+
+        /* 2mm Banana Jack Sockets */
+        .jack {
+            position: absolute;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle at 35% 35%, #475569, #090d16 72%);
+            border: 1.8px solid #f8fafc;
+            box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.7), inset 0 1px 1.5px #000;
+            cursor: crosshair;
+            z-index: 25;
+            transition: transform 0.08s ease, box-shadow 0.1s ease;
+        }
+
+        /* Larger touch target for mobile/tablet users */
+        .jack::before {
+            content: '';
+            position: absolute;
+            inset: -7px;
+            border-radius: 50%;
+        }
+
+        .jack::after {
+            content: '';
+            position: absolute;
+            inset: 2.5px;
+            border-radius: 50%;
+            background: #020408;
+        }
+
+        .jack.out { border-color: #fde047; }
+        .jack.in { border-color: #f8fafc; }
+        .jack.bidir { border-color: #38bdf8; }
+        .jack.analog { border-color: #f472b6; }
+
+        .jack:hover {
+            transform: translate(-50%, -50%) scale(1.45);
+            box-shadow: 0 0 12px #38bdf8, 0 0 4px #ffffff;
+            z-index: 40;
+        }
+
+        .jack.selected {
+            transform: translate(-50%, -50%) scale(1.55);
+            border-color: #22c55e;
+            box-shadow: 0 0 14px #22c55e, 0 0 4px #ffffff;
+            z-index: 40;
+        }
+
+        .jack.sig-high::after {
+            background: #ef4444;
+            box-shadow: 0 0 5px #ef4444;
+        }
+        .jack.sig-analog::after {
+            background: #ec4899;
+            box-shadow: 0 0 5px #ec4899;
+        }
+        .jack.sig-hiz::after {
+            background: #64748b;
+        }
+
+        /* Left Column L / H Dual Pushbutton Switch */
+        .lh-unit {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .lh-rocker {
+            display: flex;
+            border: 1.5px solid #ffffff;
+            border-radius: 2px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.55);
+        }
+
+        .lh-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            font-size: 13px;
+            transition: all 0.08s ease;
+        }
+
+        .lh-rocker[data-val="0"] .btn-l {
+            background: #1e293b;
+            color: #ffffff;
+            box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.35);
+        }
+        .lh-rocker[data-val="0"] .btn-h {
+            background: #0b0f17;
+            color: #64748b;
+        }
+
+        .lh-rocker[data-val="1"] .btn-l {
+            background: #0b0f17;
+            color: #64748b;
+        }
+        .lh-rocker[data-val="1"] .btn-h {
+            background: #dc2626;
+            color: #ffffff;
+            box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.45);
+        }
+
+        /* Board LEDs */
+        .board-led {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            border: 1.2px solid #e2e8f0;
+            background: #1e293b;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.85);
+            transition: all 0.06s ease;
+        }
+        .board-led.red.on {
+            background: radial-gradient(circle at 35% 35%, #fecaca, #ef4444 60%, #991b1b);
+            box-shadow: 0 0 10px #ef4444, 0 0 3px #fff;
+            border-color: #fff;
+        }
+        .board-led.yellow.on {
+            background: radial-gradient(circle at 35% 35%, #fef08a, #eab308 60%, #854d0e);
+            box-shadow: 0 0 10px #eab308, 0 0 3px #fff;
+            border-color: #fff;
+        }
+        .board-led.green.on {
+            background: radial-gradient(circle at 35% 35%, #bbf7d0, #22c55e 60%, #166534);
+            box-shadow: 0 0 10px #22c55e, 0 0 3px #fff;
+            border-color: #fff;
+        }
+
+        /* 7-Segment Display Unit */
+        .seven-seg-housing {
+            background: #141923;
+            border: 2px solid #cbd5e1;
+            border-radius: 3px;
+            box-shadow: inset 0 0 12px #000, 0 2px 6px rgba(0, 0, 0, 0.6);
+        }
+        .seg-lit {
+            fill: #ff2626;
+            filter: drop-shadow(0 0 4px #ff2626);
+        }
+        .seg-dim {
+            fill: #29181a;
+        }
+
+        /* Patch-Cord SVG Overlay */
+        #wiresOverlay {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 35;
+            overflow: visible;
+        }
+        .wire-hit {
+            fill: none;
+            stroke: transparent;
+            stroke-width: 18px;
+            cursor: pointer;
+            pointer-events: stroke;
+        }
+        .wire-shadow {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.5);
+            stroke-width: 5px;
+            stroke-linecap: round;
+        }
+        .wire-core {
+            fill: none;
+            stroke-width: 3.6px;
+            stroke-linecap: round;
+        }
+        .wire-hit:hover + .wire-shadow + .wire-core {
+            stroke-dasharray: 6 3;
+            filter: brightness(1.35) drop-shadow(0 0 5px #fff);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== BILINGUAL WELCOME GATEWAY OVERLAY ==================== -->
+    <div id="welcomeOverlay" class="fixed inset-0 z-[100] welcome-grid-bg overflow-y-auto flex items-center justify-center p-4 sm:p-6 transition-opacity duration-300">
+        <div class="w-full max-w-2xl bg-[#0d1525]/95 backdrop-blur-xl border border-sky-500/30 rounded-2xl shadow-[0_25px_70px_rgba(0,0,0,0.9)] overflow-hidden">
+            
+            <!-- Top Accent Bar & Language Switcher -->
+            <div class="bg-gradient-to-r from-[#164475] via-[#1c538f] to-[#0f3054] px-5 py-3 flex items-center justify-between border-b border-sky-400/20">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="font-mono-tech text-xs sm:text-sm font-bold tracking-wider text-white">HPS DIGI BOARD 2 [3910]</span>
+                </div>
+
+                <!-- Language Toggle Buttons (FR / AR) -->
+                <div class="flex items-center bg-slate-950/70 p-1 rounded-lg border border-white/15">
+                    <button id="btnLangFr" onclick="setWelcomeLang('fr')" class="px-2.5 py-1 rounded-md text-xs font-bold transition-all bg-sky-500 text-slate-950 shadow cursor-pointer">
+                        Français
+                    </button>
+                    <button id="btnLangAr" onclick="setWelcomeLang('ar')" class="px-2.5 py-1 rounded-md text-xs font-bold font-arabic transition-all text-slate-300 hover:text-white cursor-pointer">
+                        العربية
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Welcome Card Content -->
+            <div id="welcomeContentBox" class="p-6 sm:p-8 text-center" dir="ltr">
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 text-xs sm:text-sm font-semibold mb-4 animate-float">
+                    <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                    </svg>
+                    <span id="wBadgeText">Filière : Gestion Réseau et Sécurité (GRS)</span>
+                </div>
+
+                <!-- Main Greeting -->
+                <h1 id="wTitle" class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-snug mb-3">
+                    Bienvenue aux étudiants de <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">Gestion Réseau et Sécurité</span>
+                </h1>
+
+                <!-- Subtitle / Lab Description -->
+                <p id="wDesc" class="text-slate-300 text-sm sm:text-base max-w-xl mx-auto leading-relaxed mb-6">
+                    Simulateur interactif complet de la maquette numérique <strong>HPS DIGI BOARD 2 (3910)</strong> pour vos travaux pratiques d'électronique numérique et architecture des ordinateurs. Compatible PC, Tablette et Smartphone.
+                </p>
+
+                <!-- Author Attribution Card -->
+                <div class="bg-slate-900/90 border border-slate-700/80 rounded-xl p-4 mb-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center font-mono-tech font-extrabold text-white text-base shadow-lg shrink-0">
+                            MN
+                        </div>
+                        <div class="text-left" id="authorTextWrapper">
+                            <p id="wCreatedLabel" class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Conçu et développé par</p>
+                            <p class="font-mono-tech text-sm sm:text-base font-extrabold text-white tracking-wide">MOHAMMED NAHED</p>
+                        </div>
+                    </div>
+                    <span id="wDeviceTag" class="px-2.5 py-1 rounded-md bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-xs font-semibold">
+                        📱💻 PC • Tablette • Mobile
+                    </span>
+                </div>
+
+                <!-- Support & TikTok Section -->
+                <div class="bg-[#090e1a] border border-pink-500/30 rounded-xl p-4 mb-6">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 font-mono-tech text-xs font-bold uppercase" id="wSupportTitle">Support & Contact</span>
+                            <span id="wSupportSub" class="text-xs sm:text-sm text-slate-300">Besoin d'aide ou de suggestions ?</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="https://www.tiktok.com/@_n4ahed_" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-mono-tech text-xs sm:text-sm font-bold shadow-md transition-transform active:scale-95">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                                </svg>
+                                <span>TikTok : _n4ahed_</span>
+                            </a>
+                            <button onclick="copyTikTokHandle()" id="copyTiktokBtn" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs font-semibold cursor-pointer transition-colors" title="Copier le pseudo">
+                                Copier
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enter Lab CTA Button -->
+                <button onclick="enterSimulator()" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 to-emerald-500 hover:from-sky-400 hover:to-emerald-400 text-slate-950 font-extrabold text-sm sm:text-base tracking-wide shadow-[0_10px_30px_rgba(14,165,233,0.4)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2 mx-auto">
+                    <span id="wEnterBtnText">Accéder au Laboratoire (Simulateur TP)</span>
+                    <svg id="wEnterArrow" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TOP LAB CONTROL BAR ==================== -->
+    <header class="bg-[#0f172a] border-b border-slate-800 px-2.5 sm:px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 z-50 shrink-0 shadow-lg">
+        <div class="flex items-center gap-2">
+            <button onclick="showWelcomeModal()" class="px-2 py-1 rounded-md bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-[11px] font-bold cursor-pointer" title="Retour à l'accueil / Support">
+                ☰ Info
+            </button>
+            <span id="mainsIndicator" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#22c55e]"></span>
+            <span class="font-mono-tech font-extrabold text-xs sm:text-sm text-white tracking-wider">
+                HPS DIGI BOARD 2 <span class="text-sky-400">[3910]</span>
+            </span>
+            <span id="pinTooltipBanner" class="hidden xl:inline-block text-[11px] bg-slate-900 border border-slate-700 text-amber-300 font-mono-tech px-2.5 py-0.5 rounded">
+                Survolez/Touchez une douille pour voir son nom IEC et son état
+            </span>
+        </div>
+
+        <!-- Wire Color Palette -->
+        <div class="flex items-center gap-1.5 bg-slate-900 px-2 py-1 rounded-lg border border-slate-800">
+            <span class="text-[11px] text-slate-400 font-semibold hidden sm:inline mr-1">Câble :</span>
+            <button onclick="selectWireColor('auto')" id="col-auto" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-400 cursor-pointer" title="Couleur automatique">AUTO</button>
+            <button onclick="selectWireColor('#eab308')" id="col-#eab308" class="w-4 h-4 rounded-full bg-yellow-400 cursor-pointer" title="Jaune"></button>
+            <button onclick="selectWireColor('#22c55e')" id="col-#22c55e" class="w-4 h-4 rounded-full bg-green-500 cursor-pointer" title="Vert"></button>
+            <button onclick="selectWireColor('#3b82f6')" id="col-#3b82f6" class="w-4 h-4 rounded-full bg-blue-500 cursor-pointer" title="Bleu"></button>
+            <button onclick="selectWireColor('#ef4444')" id="col-#ef4444" class="w-4 h-4 rounded-full bg-red-500 cursor-pointer" title="Rouge"></button>
+            <button onclick="selectWireColor('#1e293b')" id="col-#1e293b" class="w-4 h-4 rounded-full bg-slate-800 border border-slate-400 cursor-pointer" title="Noir"></button>
+        </div>
+
+        <!-- TP Presets, Oscilloscope, Memory Viewer & Zoom -->
+        <div class="flex flex-wrap items-center gap-1.5">
+            <select id="tpPresetSelector" onchange="loadLabPreset(this.value)" class="bg-slate-900 text-slate-100 border border-slate-700 rounded-lg px-2 py-1 text-xs font-medium focus:outline-none focus:border-sky-400 cursor-pointer max-w-[180px] sm:max-w-none">
+                <option value="">-- Circuits TP Prêts (GRS) --</option>
+                <option value="empty">0. Plaque Vierge (Clean Bench)</option>
+                <option value="adder">1. Additionneur 4-Bits (Σ) + 7SEG</option>
+                <option value="counter">2. Compteur Modulo-16 (CTRDIV16)</option>
+                <option value="shift">3. Registre à Décalage (SRG4)</option>
+                <option value="alu">4. Unité Arithmétique & Logique (ALU)</option>
+                <option value="memory">5. Mémoire RAM 8x4 & EEPROM 8x4</option>
+                <option value="adc_dac">6. Potentiomètre → ADC → DAC</option>
+            </select>
+
+            <button onclick="toggleDrawer('scopeDrawer')" class="px-2 py-1 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/50 text-indigo-200 text-xs font-semibold cursor-pointer">
+                Oscillo
+            </button>
+            <button onclick="toggleDrawer('memDrawer')" class="px-2 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/50 text-emerald-200 text-xs font-semibold cursor-pointer">
+                RAM/ROM
+            </button>
+            <button onclick="clearWires()" class="px-2 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/50 text-rose-200 text-xs font-semibold cursor-pointer">
+                Vider
+            </button>
+
+            <!-- Zoom Controls -->
+            <div class="flex items-center gap-1 bg-slate-900 px-2 py-0.5 rounded-lg border border-slate-800 text-xs font-mono-tech">
+                <button onclick="adjustZoom(-0.1)" class="px-1.5 text-slate-300 hover:text-white cursor-pointer">-</button>
+                <span id="zoomLabel" class="text-sky-300">85%</span>
+                <button onclick="adjustZoom(0.1)" class="px-1.5 text-slate-300 hover:text-white cursor-pointer">+</button>
+                <button onclick="fitBoardToScreen()" class="ml-1 text-[10px] text-slate-400 hover:text-white cursor-pointer" title="Ajuster à l'écran">FIT</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== COLLAPSIBLE OSCILLOSCOPE / LOGIC ANALYZER DRAWER ==================== -->
+    <div id="scopeDrawer" class="hidden bg-[#0b111e] border-b border-slate-700 px-4 py-2.5 z-40 shrink-0">
+        <div class="max-w-[1740px] mx-auto flex flex-col gap-2">
+            <div class="flex items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono-tech text-xs font-bold">OSCILLOSCOPE 6 VOIES</span>
+                    <span id="analogScopeReadout" class="font-mono-tech text-[11px] sm:text-xs text-pink-400">Pot G- : 2.50 V | DAC : 0.00 V | ADC : 1000 (8)</span>
+                </div>
+                <button onclick="toggleDrawer('scopeDrawer')" class="text-xs text-slate-400 hover:text-white bg-slate-800 px-2 py-0.5 rounded cursor-pointer shrink-0">Fermer ✕</button>
+            </div>
+            <canvas id="scopeCanvas" class="w-full h-28 sm:h-32 bg-[#05080f] border border-slate-800 rounded-lg block"></canvas>
+        </div>
+    </div>
+
+    <!-- ==================== COLLAPSIBLE RAM 8x4 & EEPROM 8x4 INSPECTOR DRAWER ==================== -->
+    <div id="memDrawer" class="hidden bg-[#0b111e] border-b border-slate-700 px-4 py-2.5 z-40 shrink-0 max-h-[45vh] overflow-y-auto">
+        <div class="max-w-[1740px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-[#070b14] border border-slate-800 rounded-lg p-2.5">
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="font-mono-tech text-xs font-bold text-amber-300">RAM 8×4 (Volatile)</span>
+                    <span id="ramStatusBadge" class="font-mono-tech text-[11px] text-slate-400">Adr: 0 | CS: 0 | WE: 0 | OE: 0</span>
+                </div>
+                <div id="ramGridView" class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 font-mono-tech text-xs"></div>
+            </div>
+            <div class="bg-[#070b14] border border-slate-800 rounded-lg p-2.5">
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="font-mono-tech text-xs font-bold text-emerald-300">EEPROM 8×4 (Non-Volatile)</span>
+                    <span id="eepromStatusBadge" class="font-mono-tech text-[11px] text-slate-400">Adr: 0 | CS: 0 | WE: 0 | OE: 0</span>
+                </div>
+                <div id="eepromGridView" class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 font-mono-tech text-xs"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN WORKBENCH WITH 1:1 HPS DIGI BOARD 2 (3910) ==================== -->
+    <main id="benchViewport">
+        <div id="hpsBoard" class="hps-pcb">
+            <!-- PCB Mounting Screws -->
+            <div class="pcb-screw" style="top: 12px; left: 16px;"></div>
+            <div class="pcb-screw" style="top: 12px; left: 590px;"></div>
+            <div class="pcb-screw" style="top: 12px; left: 1140px;"></div>
+            <div class="pcb-screw" style="top: 12px; right: 16px;"></div>
+            <div class="pcb-screw" style="top: 455px; left: 590px;"></div>
+            <div class="pcb-screw" style="top: 455px; left: 1140px;"></div>
+            <div class="pcb-screw" style="bottom: 12px; left: 16px;"></div>
+            <div class="pcb-screw" style="bottom: 12px; left: 590px;"></div>
+            <div class="pcb-screw" style="bottom: 12px; left: 1140px;"></div>
+            <div class="pcb-screw" style="bottom: 12px; right: 16px;"></div>
+
+            <!-- Interactive SVG Layer for Curved Banana Patch Cords -->
+            <svg id="wiresOverlay"></svg>
+
+            <!-- Container populated procedurally with exact 1:1 HPS hardware coordinates -->
+            <div id="boardModulesLayer" class="relative w-full h-full"></div>
+
+            <!-- Bottom Silkscreen Branding: hps | DIGI BOARD 2 | BY MOHAMMED NAHED | 3910 -->
+            <div class="absolute bottom-3 left-6 flex items-center gap-1.5 border-2 border-white/85 rounded-full px-2.5 py-0.5">
+                <span class="silk text-xs italic tracking-tighter">hps</span>
+            </div>
+            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-3">
+                <span class="silk text-base tracking-[0.22em]">DIGI BOARD 2</span>
+                <span class="silk text-[11px] text-sky-200/90 border border-white/30 px-2 py-0.5 rounded">DEV: MOHAMMED NAHED</span>
+            </div>
+            <div class="absolute bottom-3 right-8">
+                <span class="silk text-sm tracking-widest">3910</span>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        /**
+         * ============================================================================
+         * BILINGUAL WELCOME GATEWAY (FRANÇAIS / العربية)
+         * ============================================================================
+         */
+        let currentWelcomeLang = 'fr';
+
+        const WELCOME_TRANSLATIONS = {
+            fr: {
+                dir: 'ltr',
+                badge: 'Filière : Gestion Réseau et Sécurité (GRS)',
+                titleHtml: 'Bienvenue aux étudiants de <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">Gestion Réseau et Sécurité</span>',
+                desc: 'Simulateur interactif complet de la maquette numérique <strong>HPS DIGI BOARD 2 (3910)</strong> pour vos travaux pratiques de logique et d’architecture. Compatible PC, Tablette et Téléphone.',
+                createdLabel: 'Conçu et développé par',
+                deviceTag: '📱💻 PC • Tablette • Mobile',
+                supportTitle: 'Support & Contact',
+                supportSub: 'Besoin d’aide ou d’assistance technique ?',
+                copyBtn: 'Copier',
+                copiedBtn: 'Copié ✓',
+                enterBtn: 'Accéder au Laboratoire (Simulateur TP)'
+            },
+            ar: {
+                dir: 'rtl',
+                badge: 'شعبة : Gestion Réseau et Sécurité (GRS)',
+                titleHtml: 'مرحباً بتلاميذ شعبة <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">Gestion Réseau et Sécurité</span>',
+                desc: 'محاكي تفاعلي متكامل للوحة التجارب الرقمية <strong>HPS DIGI BOARD 2 (3910)</strong> لإنجاز التمارين التطبيقية (TP). متوافق بالكامل مع الهاتف، الطابليت، والحاسوب.',
+                createdLabel: 'تم تصميم وتطوير هذا الموقع بواسطة',
+                deviceTag: '📱💻 هاتف • طابليت • حاسوب',
+                supportTitle: 'الدعم والتواصل',
+                supportSub: 'للمساعدة أو الاستفسار تواصل معي عبر تيك توك :',
+                copyBtn: 'نسخ',
+                copiedBtn: 'تم النسخ ✓',
+                enterBtn: 'الدخول إلى المختبر (بدء المحاكاة)'
+            }
+        };
+
+        function setWelcomeLang(lang) {
+            currentWelcomeLang = lang;
+            const t = WELCOME_TRANSLATIONS[lang];
+            const box = document.getElementById('welcomeContentBox');
+            const authorWrapper = document.getElementById('authorTextWrapper');
+            const arrow = document.getElementById('wEnterArrow');
+
+            box.setAttribute('dir', t.dir);
+            box.classList.toggle('font-arabic', lang === 'ar');
+
+            if (lang === 'ar') {
+                authorWrapper.classList.remove('text-left');
+                authorWrapper.classList.add('text-right');
+                arrow.style.transform = 'rotate(180deg)';
+                document.getElementById('btnLangAr').className = 'px-2.5 py-1 rounded-md text-xs font-bold font-arabic transition-all bg-sky-500 text-slate-950 shadow cursor-pointer';
+                document.getElementById('btnLangFr').className = 'px-2.5 py-1 rounded-md text-xs font-bold transition-all text-slate-300 hover:text-white cursor-pointer';
+            } else {
+                authorWrapper.classList.remove('text-right');
+                authorWrapper.classList.add('text-left');
+                arrow.style.transform = 'rotate(0deg)';
+                document.getElementById('btnLangFr').className = 'px-2.5 py-1 rounded-md text-xs font-bold transition-all bg-sky-500 text-slate-950 shadow cursor-pointer';
+                document.getElementById('btnLangAr').className = 'px-2.5 py-1 rounded-md text-xs font-bold font-arabic transition-all text-slate-300 hover:text-white cursor-pointer';
+            }
+
+            document.getElementById('wBadgeText').textContent = t.badge;
+            document.getElementById('wTitle').innerHTML = t.titleHtml;
+            document.getElementById('wDesc').innerHTML = t.desc;
+            document.getElementById('wCreatedLabel').textContent = t.createdLabel;
+            document.getElementById('wDeviceTag').textContent = t.deviceTag;
+            document.getElementById('wSupportTitle').textContent = t.supportTitle;
+            document.getElementById('wSupportSub').textContent = t.supportSub;
+            document.getElementById('copyTiktokBtn').textContent = t.copyBtn;
+            document.getElementById('wEnterBtnText').textContent = t.enterBtn;
+        }
+
+        function copyTikTokHandle() {
+            navigator.clipboard?.writeText('_n4ahed_');
+            const btn = document.getElementById('copyTiktokBtn');
+            btn.textContent = WELCOME_TRANSLATIONS[currentWelcomeLang].copiedBtn;
+            setTimeout(() => {
+                btn.textContent = WELCOME_TRANSLATIONS[currentWelcomeLang].copyBtn;
+            }, 2000);
+        }
+
+        function enterSimulator() {
+            const overlay = document.getElementById('welcomeOverlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                fitBoardToScreen();
+            }, 280);
+        }
+
+        function showWelcomeModal() {
+            const overlay = document.getElementById('welcomeOverlay');
+            overlay.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                overlay.style.opacity = '1';
+            });
+        }
+
+        /**
+         * ============================================================================
+         * HPS SYSTEMTECHNIK DIGI BOARD 2 (MODEL 3910)
+         * COMPLETE 1:1 ARCHITECTURAL & MIXED-SIGNAL SIMULATION ENGINE
+         * ============================================================================
+         */
+        let boardZoom = 0.82;
+        let mainsOn = true;
+        let selectedSocket = null;
+        let wireColorMode = 'auto';
+        const AUTO_COLORS = ['#eab308', '#22c55e', '#3b82f6', '#ef4444', '#f97316', '#a855f7'];
+        let autoColorIdx = 0;
+
+        let patchWires = [];
+
+        const swState = new Array(8).fill(0);
+        let pulserState = 0;
+        let potVoltage = 2.50;
+        let monoDurationSec = 1.0;
+        let monoTimerEnd = 0;
+        let prevMonoTrig = 0;
+
+        let masterTick = 0;
+        const clkState = {
+            '100kHz': 0, '10kHz': 0, '1kHz': 0, '100Hz': 0, '10Hz': 0, '1Hz': 0, '0.1Hz': 0
+        };
+
+        const jkState = [0, 0, 0, 0];
+        const prevJkClk = [0, 0, 0, 0];
+        const dffState = [0, 0, 0, 0];
+        const prevDffClk = [0, 0, 0, 0];
+        const schmittState = [0, 0];
+
+        let ctr16Val = 0;
+        let prevCtr16Clk = 0;
+        let srg4Val = 0;
+        let prevSrg4Clk = 0;
+
+        let ramMem = new Array(8).fill(0);
+        let eepromMem = [0x5, 0xA, 0x3, 0xC, 0x9, 0x6, 0xF, 0x1];
+
+        const sockets = {};
+
+        const SCOPE_SAMPLES = 150;
+        const scopeBuffers = {
+            SW0: new Array(SCOPE_SAMPLES).fill(0),
+            SW1: new Array(SCOPE_SAMPLES).fill(0),
+            CLK1HZ: new Array(SCOPE_SAMPLES).fill(0),
+            LED_R1: new Array(SCOPE_SAMPLES).fill(0),
+            LED_Y1: new Array(SCOPE_SAMPLES).fill(0),
+            POT_V: new Array(SCOPE_SAMPLES).fill(2.5)
+        };
+
+        const boardLayer = document.getElementById('boardModulesLayer');
+
+        function addSocket(id, x, y, dir, label, desc) {
+            sockets[id] = { id, x, y, dir, label, desc, val: 0, analogV: null };
+            const el = document.createElement('div');
+            el.className = `jack ${dir}`;
+            el.id = `jack_${id}`;
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
+            el.dataset.pin = id;
+
+            const showPinStatus = () => {
+                const s = sockets[id];
+                const stateStr = s.analogV !== null
+                    ? `${s.analogV.toFixed(2)} V (Analog)`
+                    : (s.val === null ? 'Hi-Z (Haute Impédance)' : (s.val ? 'HIGH (1 / +5V)' : 'LOW (0 / 0V)'));
+                const banner = document.getElementById('pinTooltipBanner');
+                banner.textContent = `[${id}] ${desc} — État: ${stateStr}`;
+            };
+
+            el.addEventListener('mouseenter', showPinStatus);
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showPinStatus();
+                onSocketClicked(id);
+            });
+
+            boardLayer.appendChild(el);
+            return el;
+        }
+
+        function addLabel(text, x, y, size = 10, extraClass = '') {
+            const span = document.createElement('span');
+            span.className = `silk absolute pointer-events-none ${extraClass}`;
+            span.style.left = `${x}px`;
+            span.style.top = `${y}px`;
+            span.style.fontSize = `${size}px`;
+            span.textContent = text;
+            boardLayer.appendChild(span);
+            return span;
+        }
+
+        function addBox(x, y, w, h, htmlContent = '') {
+            const box = document.createElement('div');
+            box.className = 'iec-box';
+            box.style.left = `${x}px`;
+            box.style.top = `${y}px`;
+            box.style.width = `${w}px`;
+            box.style.height = `${h}px`;
+            if (htmlContent) box.innerHTML = htmlContent;
+            boardLayer.appendChild(box);
+            return box;
+        }
+
+        function buildCompleteBoard() {
+            // A. LEFT COLUMN: 8x L/H DATA SWITCHES + PULSER + DIV10 CLOCK + POT + ZIF
+            for (let i = 0; i < 8; i++) {
+                const isBottomBank = i >= 4;
+                const y = 32 + i * 58 + (isBottomBank ? 24 : 0);
+
+                const unit = document.createElement('div');
+                unit.className = 'lh-unit';
+                unit.style.left = '26px';
+                unit.style.top = `${y}px`;
+                unit.innerHTML = `
+                    <div class="lh-rocker" id="swRocker_${i}" data-val="0" onclick="toggleDataSwitch(${i})" title="Interrupteur SW${i} (L=0 / H=1)">
+                        <div class="lh-btn btn-l">L</div>
+                        <div class="lh-btn btn-h">H</div>
+                    </div>
+                `;
+                boardLayer.appendChild(unit);
+
+                addLabel('Q', 84, y + 1, 9);
+                addLabel('Q̄', 84, y + 15, 9);
+
+                const led = document.createElement('div');
+                led.className = 'board-led red absolute';
+                led.id = `swLed_${i}`;
+                led.style.left = '132px';
+                led.style.top = `${y + 6}px`;
+                boardLayer.appendChild(led);
+
+                addSocket(`SW${i}_Q`, 104, y + 5, 'out', 'Q', `Switch SW${i} Sortie Directe Q`);
+                addSocket(`SW${i}_QN`, 104, y + 19, 'out', 'Q̄', `Switch SW${i} Sortie Complémentaire Q̄`);
+                addSocket(`SW${i}_Q2`, 156, y + 11, 'out', 'Q', `Switch SW${i} Sortie Auxiliaire Q`);
+            }
+
+            addSocket('RAIL_H1', 104, 152, 'out', 'H', 'Rail Constant H (+5V / Logique 1)');
+            addLabel('H', 88, 148, 9, 'text-red-300');
+            addSocket('RAIL_L1', 104, 274, 'out', 'L', 'Rail Constant L (0V / Masse Logique 0)');
+            addLabel('L', 88, 270, 9, 'text-sky-300');
+            addSocket('RAIL_H2', 104, 388, 'out', 'H', 'Rail Constant H (+5V / Logique 1)');
+            addLabel('H', 88, 384, 9, 'text-red-300');
+            addSocket('RAIL_L2', 104, 510, 'out', 'L', 'Rail Constant L (0V / Masse Logique 0)');
+            addLabel('L', 88, 506, 9, 'text-sky-300');
+
+            // Manual Debounced Red Pulser Button (Touch + Mouse support)
+            const pulserBtn = document.createElement('button');
+            pulserBtn.className = 'absolute w-7 h-7 rounded-full bg-red-600 hover:bg-red-500 active:scale-90 border-2 border-white shadow-lg cursor-pointer z-20';
+            pulserBtn.style.left = '26px';
+            pulserBtn.style.top = '546px';
+            pulserBtn.title = 'Bouton Poussoir Impulsionnel Anti-Rebond (Pulser)';
+            const pressPulse = (e) => { e.preventDefault(); pulserState = 1; simulateStep(); };
+            const releasePulse = () => { pulserState = 0; simulateStep(); };
+            pulserBtn.addEventListener('mousedown', pressPulse);
+            pulserBtn.addEventListener('mouseup', releasePulse);
+            pulserBtn.addEventListener('mouseleave', releasePulse);
+            pulserBtn.addEventListener('touchstart', pressPulse, { passive: false });
+            pulserBtn.addEventListener('touchend', releasePulse);
+            boardLayer.appendChild(pulserBtn);
+
+            addLabel('Q', 66, 543, 9);
+            addLabel('Q̄', 66, 557, 9);
+            addSocket('PULSE_Q', 84, 547, 'out', 'Q', 'Bouton Impulsionnel Sortie Q');
+            addSocket('PULSE_QN', 84, 561, 'out', 'Q̄', 'Bouton Impulsionnel Sortie Q̄');
+
+            // Clock Generator & DIV10
+            addBox(26, 588, 44, 48, `<div class="silk text-[10px] text-center mt-1">G</div><div class="silk text-[9px] text-center mt-2">⎍</div>`);
+            addSocket('CLK_100K', 70, 612, 'out', '100kHz', 'Horloge Maître 100 kHz');
+            addLabel('100kHz', 80, 608, 8);
+
+            addBox(122, 588, 76, 178, `
+                <div class="silk text-[10px] text-center py-1 iec-divider">DIV10</div>
+                <div class="silk text-[8px] px-1.5 py-1 iec-divider flex justify-between"><span>+</span><span>CT≥5</span></div>
+                <div class="h-6 iec-divider"></div>
+                <div class="h-6 iec-divider"></div>
+                <div class="h-6 iec-divider"></div>
+                <div class="h-6 iec-divider"></div>
+                <div class="h-6"></div>
+            `);
+            addSocket('DIV10_IN', 122, 622, 'in', '+', 'DIV10 Entrée Horloge Externe');
+            const divFreqs = ['10kHz', '1kHz', '100Hz', '10Hz', '1Hz', '0.1Hz'];
+            divFreqs.forEach((f, idx) => {
+                const fy = 622 + idx * 25;
+                addSocket(`CLK_${f}`, 198, fy, 'out', f, `DIV10 Sortie Horloge ${f}`);
+                addLabel(f, 208, fy - 4, 8);
+            });
+
+            // Analog Potentiometer
+            addBox(26, 668, 72, 96, `<div class="silk text-[10px] text-center mt-1">G−</div>`);
+            const potDial = document.createElement('div');
+            potDial.id = 'potKnobVisual';
+            potDial.className = 'absolute w-11 h-11 rounded-full bg-slate-900 border-2 border-slate-300 shadow-lg cursor-ns-resize z-20 flex items-center justify-center';
+            potDial.style.left = '40px';
+            potDial.style.top = '694px';
+            potDial.title = 'Potentiomètre Analogique 0V à 5V';
+            potDial.innerHTML = `<div id="potNeedle" class="w-1 h-4 bg-white rounded-full -translate-y-2 origin-bottom"></div>`;
+            setupPotentiometerDrag(potDial);
+            boardLayer.appendChild(potDial);
+
+            addLabel('0V', 31, 748, 8);
+            addLabel('5V', 80, 748, 8);
+            addSocket('POT_OUT', 98, 716, 'analog', '0..5V', 'Sortie Analogique Variable (0.00V - 5.00V)');
+
+            // Bottom-Left 8-Pin ZIF
+            addBox(44, 796, 86, 56, `<div class="w-8 h-8 mx-auto mt-2.5 bg-slate-950 border border-slate-400 rounded-sm"></div>`);
+            [1, 2, 4, 8].forEach((lbl, idx) => {
+                const py = 804 + idx * 13;
+                addSocket(`ZIF_L${lbl}`, 44, py, 'bidir', `L${lbl}`, `Support CI Broche Gauche ${lbl}`);
+                addLabel(`${lbl}`, 28, py - 4, 8);
+                addSocket(`ZIF_R${lbl}`, 130, py, 'bidir', `R${lbl}`, `Support CI Broche Droite ${lbl}`);
+                addLabel(`${lbl}`, 140, py - 4, 8);
+            });
+
+            // B. LOGIC GATES MATRIX
+            for (let g = 0; g < 7; g++) {
+                const gy = 48 + g * 106;
+                const numInputs = g === 0 ? 4 : (g <= 2 ? 3 : 2);
+                const gh = numInputs === 4 ? 72 : (numInputs === 3 ? 60 : 48);
+                addBox(274, gy, 44, gh, `<div class="silk text-xs text-center mt-2">&amp;</div>`);
+                for (let inp = 0; inp < numInputs; inp++) {
+                    addSocket(`AND${g}_I${inp}`, 274, gy + 12 + inp * 16, 'in', `I${inp}`, `Porte ET (&) #${g + 1} Entrée ${inp + 1}`);
+                }
+                addSocket(`AND${g}_Y`, 318, gy + gh / 2, 'out', 'Y', `Porte ET (&) #${g + 1} Sortie`);
+            }
+
+            for (let g = 0; g < 7; g++) {
+                const gy = 48 + g * 106;
+                const isBottomAnd = g === 6;
+                const numInputs = g === 0 ? 4 : (g <= 2 ? 3 : 2);
+                const gh = numInputs === 4 ? 72 : (numInputs === 3 ? 60 : 48);
+                const sym = isBottomAnd ? '&amp;' : '&ge;1';
+                const prefix = isBottomAnd ? 'AND7' : `OR${g}`;
+                addBox(378, gy, 44, gh, `<div class="silk text-xs text-center mt-2">${sym}</div>`);
+                for (let inp = 0; inp < numInputs; inp++) {
+                    addSocket(`${prefix}_I${inp}`, 378, gy + 12 + inp * 16, 'in', `I${inp}`, `Porte ${isBottomAnd ? 'ET' : 'OU'} #${g + 1} Entrée ${inp + 1}`);
+                }
+                addSocket(`${prefix}_Y`, 422, gy + gh / 2, 'out', 'Y', `Porte ${isBottomAnd ? 'ET' : 'OU'} #${g + 1} Sortie`);
+            }
+
+            for (let c = 0; c < 3; c++) {
+                const cy = 48 + c * 106;
+                addBox(480, cy, 34, 54, `<div class="silk text-[10px] text-center mt-2">&amp;</div>`);
+                addBox(514, cy, 34, 54, `<div class="silk text-[10px] text-center mt-2">&ge;1</div>`);
+                addSocket(`CMB${c}_A`, 480, cy + 14, 'in', 'A', `Bloc Combiné #${c + 1} Entrée A`);
+                addSocket(`CMB${c}_B`, 480, cy + 40, 'in', 'B', `Bloc Combiné #${c + 1} Entrée B`);
+                addSocket(`CMB${c}_AND`, 548, cy + 14, 'out', 'AND', `Bloc Combiné #${c + 1} Sortie ET`);
+                addSocket(`CMB${c}_OR`, 548, cy + 40, 'out', 'OR', `Bloc Combiné #${c + 1} Sortie OU`);
+            }
+
+            addBox(486, 372, 46, 52, `<div class="silk text-xs text-center mt-2">=1</div>`);
+            addSocket('XOR_A', 486, 386, 'in', 'A', 'Porte OU-Exclusif (XOR =1) Entrée A');
+            addSocket('XOR_B', 486, 412, 'in', 'B', 'Porte OU-Exclusif (XOR =1) Entrée B');
+            addSocket('XOR_Y', 532, 398, 'out', 'Y', 'Porte OU-Exclusif (XOR =1) Sortie');
+
+            addBox(486, 462, 46, 52, `<div class="silk text-xs text-center mt-2">=</div>`);
+            addSocket('XNOR_A', 486, 476, 'in', 'A', 'Porte Coïncidence (XNOR =) Entrée A');
+            addSocket('XNOR_B', 486, 502, 'in', 'B', 'Porte Coïncidence (XNOR =) Entrée B');
+            addSocket('XNOR_Y', 532, 488, 'out', 'Y', 'Porte Coïncidence (XNOR =) Sortie');
+
+            addBox(476, 558, 66, 74, `
+                <div class="silk text-[9px] text-center mt-1">COMP</div>
+                <div class="silk text-[8px] flex justify-between px-1.5 mt-2"><span>P</span><span>P&gt;Q</span></div>
+                <div class="silk text-[8px] text-right px-1.5 mt-1.5">P=Q</div>
+                <div class="silk text-[8px] flex justify-between px-1.5 mt-1.5"><span>Q</span><span>P&lt;Q</span></div>
+            `);
+            addSocket('COMP1_P', 476, 582, 'in', 'P', 'Comparateur 1-Bit Entrée P');
+            addSocket('COMP1_Q', 476, 616, 'in', 'Q', 'Comparateur 1-Bit Entrée Q');
+            addSocket('COMP1_GT', 542, 582, 'out', 'P>Q', 'Comparateur 1-Bit Sortie P > Q');
+            addSocket('COMP1_EQ', 542, 598, 'out', 'P=Q', 'Comparateur 1-Bit Sortie P = Q');
+            addSocket('COMP1_LT', 542, 616, 'out', 'P<Q', 'Comparateur 1-Bit Sortie P < Q');
+
+            addBox(486, 706, 46, 56, `<div class="silk text-[10px] text-center mt-1">1 ⎍</div>`);
+            addSocket('MONO_TRG', 486, 722, 'in', 'TRG', 'Monostable Déclenchement Front Montant');
+            addSocket('MONO_R', 486, 748, 'in', 'R', 'Monostable Reset');
+            addSocket('MONO_Q', 532, 722, 'out', 'Q', 'Monostable Sortie Q');
+            addSocket('MONO_QN', 532, 748, 'out', 'Q̄', 'Monostable Sortie Q̄');
+
+            const monoSelBtn = document.createElement('button');
+            monoSelBtn.id = 'monoTimeBtn';
+            monoSelBtn.className = 'absolute px-2 py-0.5 rounded bg-slate-900 border border-white text-[9px] font-mono-tech font-bold text-amber-300 cursor-pointer z-20';
+            monoSelBtn.style.left = '484px';
+            monoSelBtn.style.top = '770px';
+            monoSelBtn.textContent = 'T = 1.0s';
+            monoSelBtn.onclick = cycleMonoDuration;
+            boardLayer.appendChild(monoSelBtn);
+
+            for (let n = 0; n < 6; n++) {
+                const ny = 188 + n * 48;
+                addSocket(`NOT${n}_A`, 602, ny, 'in', 'A', `Inverseur (NOT) #${n + 1} Entrée`);
+                addLabel('1▷o', 612, ny - 4, 8);
+                addSocket(`NOT${n}_Y`, 640, ny, 'out', 'Y', `Inverseur (NOT) #${n + 1} Sortie`);
+            }
+
+            for (let oc = 0; oc < 2; oc++) {
+                const oy = 524 + oc * 54;
+                addBox(602, oy, 38, 36, `<div class="silk text-[10px] text-center mt-2">▷♢</div>`);
+                addSocket(`DRV${oc}_A`, 602, oy + 18, 'in', 'A', `Driver Sortie Ouverte #${oc + 1} Entrée`);
+                addSocket(`DRV${oc}_Y`, 640, oy + 18, 'out', 'Y', `Driver Sortie Ouverte #${oc + 1} Sortie`);
+            }
+
+            for (let st = 0; st < 2; st++) {
+                const sy = 682 + st * 56;
+                addBox(602, sy, 38, 38, `<div class="silk text-[10px] text-center mt-2">⎍</div>`);
+                addSocket(`SCH${st}_A`, 602, sy + 19, 'in', 'A', `Trigger de Schmitt #${st + 1} Entrée (Seuil 1.7V/3.3V)`);
+                addSocket(`SCH${st}_Y`, 640, sy + 19, 'out', 'Y', `Trigger de Schmitt #${st + 1} Sortie`);
+            }
+
+            // C. FLIP-FLOPS
+            for (let j = 0; j < 4; j++) {
+                const jx = 696 + j * 112;
+                addBox(jx, 48, 56, 108, `
+                    <div class="silk text-[8px] px-1 pt-1">S</div>
+                    <div class="silk text-[8px] px-1 pt-2">1J</div>
+                    <div class="silk text-[8px] px-1 pt-2">▷C1</div>
+                    <div class="silk text-[8px] px-1 pt-2">1K</div>
+                    <div class="silk text-[8px] px-1 pt-2">R</div>
+                `);
+                addSocket(`JK${j}_S`, jx, 56, 'in', 'S', `Bascule JK #${j + 1} Preset (S)`);
+                addSocket(`JK${j}_J`, jx, 78, 'in', '1J', `Bascule JK #${j + 1} Entrée J`);
+                addSocket(`JK${j}_C`, jx, 102, 'in', 'C1', `Bascule JK #${j + 1} Horloge (Front Montant)`);
+                addSocket(`JK${j}_K`, jx, 126, 'in', '1K', `Bascule JK #${j + 1} Entrée K`);
+                addSocket(`JK${j}_R`, jx, 148, 'in', 'R', `Bascule JK #${j + 1} Reset (R)`);
+
+                addSocket(`JK${j}_Q`, jx + 56, 78, 'out', 'Q', `Bascule JK #${j + 1} Sortie Q`);
+                addSocket(`JK${j}_QN`, jx + 56, 126, 'out', 'Q̄', `Bascule JK #${j + 1} Sortie Q̄`);
+            }
+
+            for (let d = 0; d < 4; d++) {
+                const dx = 696 + d * 112;
+                addBox(dx, 178, 56, 44, `
+                    <div class="silk text-[8px] px-1 pt-1">1D</div>
+                    <div class="silk text-[8px] px-1 pt-2.5">▷C1</div>
+                `);
+                addSocket(`DFF${d}_D`, dx, 188, 'in', '1D', `Bascule D #${d + 1} Donnée D`);
+                addSocket(`DFF${d}_C`, dx, 212, 'in', 'C1', `Bascule D #${d + 1} Horloge (Front Montant)`);
+                addSocket(`DFF${d}_Q`, dx + 56, 188, 'out', 'Q', `Bascule D #${d + 1} Sortie Q`);
+                addSocket(`DFF${d}_QN`, dx + 56, 212, 'out', 'Q̄', `Bascule D #${d + 1} Sortie Q̄`);
+            }
+
+            // D. ADDERS, COMP, MUX, DX, ADC, DAC
+            for (let a = 0; a < 2; a++) {
+                const ax = 726 + a * 124;
+                addBox(ax, 250, 58, 224, `
+                    <div class="silk text-xs text-center mt-1">Σ</div>
+                    <div class="silk text-[9px] text-center mt-14">P</div>
+                    <div class="silk text-[9px] text-center mt-16">Q</div>
+                    <div class="silk text-[8px] flex justify-between px-1 mt-8"><span>CI</span><span>CO</span></div>
+                `);
+                for (let b = 0; b < 4; b++) {
+                    addSocket(`ADD${a}_P${b}`, ax, 272 + b * 22, 'in', `P${b}`, `Additionneur #${a + 1} Opérande P${b}`);
+                    addSocket(`ADD${a}_Q${b}`, ax, 368 + b * 22, 'in', `Q${b}`, `Additionneur #${a + 1} Opérande Q${b}`);
+                    addSocket(`ADD${a}_S${b}`, ax + 58, 314 + b * 24, 'out', `Σ${b}`, `Additionneur #${a + 1} Somme Σ${b}`);
+                }
+                addSocket(`ADD${a}_CI`, ax + 14, 474, 'in', 'CI', `Additionneur #${a + 1} Retenue Entrante CI`);
+                addSocket(`ADD${a}_CO`, ax + 44, 474, 'out', 'CO', `Additionneur #${a + 1} Retenue Sortante CO`);
+            }
+
+            addBox(726, 514, 58, 286, `
+                <div class="silk text-[10px] text-center mt-1">COMP</div>
+                <div class="silk text-[9px] text-center mt-10">P</div>
+                <div class="silk text-[9px] text-center mt-24">Q</div>
+            `);
+            for (let b = 0; b < 4; b++) {
+                addSocket(`CMP4_P${b}`, 726, 534 + b * 22, 'in', `P${b}`, `Comparateur 4-Bits Mot P bit ${b}`);
+                addSocket(`CMP4_Q${b}`, 726, 710 + b * 22, 'in', `Q${b}`, `Comparateur 4-Bits Mot Q bit ${b}`);
+            }
+            addSocket('CMP4_IGT', 726, 636, 'in', '>', 'Comparateur Cascade P>Q in');
+            addSocket('CMP4_IEQ', 726, 658, 'in', '=', 'Comparateur Cascade P=Q in');
+            addSocket('CMP4_ILT', 726, 680, 'in', '<', 'Comparateur Cascade P<Q in');
+
+            addSocket('CMP4_GT', 784, 636, 'out', 'P>Q', 'Comparateur 4-Bits Sortie P > Q');
+            addSocket('CMP4_EQ', 784, 658, 'out', 'P=Q', 'Comparateur 4-Bits Sortie P = Q');
+            addSocket('CMP4_LT', 784, 680, 'out', 'P<Q', 'Comparateur 4-Bits Sortie P < Q');
+
+            addBox(864, 514, 58, 174, `
+                <div class="silk text-[10px] text-center mt-1">MUX</div>
+                <div class="silk text-[8px] px-1 mt-1">EN̄</div>
+                <div class="silk text-[8px] px-1 mt-2">G 0/3</div>
+            `);
+            addSocket('MUX_EN', 864, 534, 'in', 'EN̄', 'MUX Enable (Actif Bas)');
+            addSocket('MUX_S0', 864, 558, 'in', 'S0', 'MUX Adresse Sélection S0');
+            addSocket('MUX_S1', 864, 578, 'in', 'S1', 'MUX Adresse Sélection S1');
+            for (let i = 0; i < 4; i++) {
+                addSocket(`MUX_I${i}`, 864, 606 + i * 22, 'in', `I${i}`, `MUX Entrée Donnée ${i}`);
+            }
+            addSocket('MUX_Y', 922, 582, 'out', 'Y', 'MUX Sortie Y');
+            addSocket('MUX_YN', 922, 626, 'out', 'Ȳ', 'MUX Sortie Complémentaire Ȳ');
+
+            addBox(986, 514, 58, 128, `
+                <div class="silk text-[10px] text-center mt-1">DX</div>
+                <div class="silk text-[8px] px-1 mt-2">G 0/3</div>
+            `);
+            addSocket('DX_S0', 986, 544, 'in', 'S0', 'Démultiplexeur Adresse S0');
+            addSocket('DX_S1', 986, 566, 'in', 'S1', 'Démultiplexeur Adresse S1');
+            addSocket('DX_EN', 986, 606, 'in', 'EN', 'Démultiplexeur Validation / Donnée');
+            for (let i = 0; i < 4; i++) {
+                addSocket(`DX_O${i}`, 1044, 540 + i * 26, 'out', `O${i}`, `Démultiplexeur Sortie Décodée ${i}`);
+            }
+
+            addBox(848, 712, 54, 118, `<div class="silk text-[10px] text-center mt-2">∩/#</div><div class="silk text-[8px] text-center mt-1">ADC 4b</div>`);
+            addSocket('ADC_SOC', 848, 728, 'in', 'SOC', 'ADC Start of Conversion');
+            addSocket('ADC_IN', 848, 796, 'analog', '∩', 'ADC Entrée Analogique (0V - 5V)');
+            for (let b = 0; b < 4; b++) {
+                addSocket(`ADC_D${3 - b}`, 902, 728 + b * 22, 'out', `D${3 - b}`, `ADC Sortie Numérique Bit D${3 - b}`);
+            }
+            addSocket('ADC_EOC', 902, 816, 'out', 'EOC', 'ADC End of Conversion');
+
+            addBox(968, 712, 54, 118, `<div class="silk text-[10px] text-center mt-2">#/∩</div><div class="silk text-[8px] text-center mt-1">DAC 4b</div>`);
+            for (let b = 0; b < 4; b++) {
+                addSocket(`DAC_D${3 - b}`, 968, 728 + b * 22, 'in', `D${3 - b}`, `DAC Entrée Numérique Bit D${3 - b}`);
+            }
+            addSocket('DAC_OUT', 1022, 796, 'analog', '∩', 'DAC Sortie Analogique (0V - 5V)');
+
+            // E. CTRDIV16, EN2, SRG4
+            addBox(992, 250, 74, 224, `
+                <div class="silk text-[9px] text-center mt-1">CTRDIV16</div>
+                <div class="silk text-[8px] px-1 mt-1">CT=0</div>
+                <div class="silk text-[8px] px-1 mt-3">G1 / C3 / G2</div>
+                <div class="silk text-[8px] px-1 mt-12">3D (Load)</div>
+            `);
+            addSocket('CTR_RST', 992, 274, 'in', 'CT=0', 'Compteur CTRDIV16 Reset Synchrone (CT=0)');
+            addSocket('CTR_DIR', 992, 300, 'in', 'G1', 'Compteur Direction (0 = Up +, 1 = Down -)');
+            addSocket('CTR_EN', 992, 326, 'in', 'G2', 'Compteur Validation Comptage (G2)');
+            addSocket('CTR_CLK', 992, 352, 'in', 'C3', 'Compteur Horloge (Front Montant C3)');
+            addSocket('CTR_TC15', 1066, 300, 'out', 'CT=15', 'Compteur Fin de Comptage (CT=15)');
+            addSocket('CTR_TC0', 1066, 336, 'out', 'CT=0', 'Compteur Passage par Zéro (CT=0)');
+
+            for (let b = 0; b < 4; b++) {
+                const by = 388 + b * 22;
+                addSocket(`CTR_D${b}`, 992, by, 'in', `D${b}`, `Compteur Préchargement Parallèle D${b}`);
+                addSocket(`CTR_Q${b}`, 1066, by, 'out', `Q${b}`, `Compteur Sortie Binaire Q${b}`);
+            }
+
+            addBox(1126, 408, 60, 122, `
+                <div class="silk text-[9px] text-center mt-1">EN2</div>
+                <div class="silk text-xs text-center mt-2">▷</div>
+            `);
+            addSocket('BUF_EN', 1126, 424, 'in', 'EN2', 'Buffer Tri-State Validation EN2 (1=Actif, 0=Hi-Z)');
+            for (let b = 0; b < 4; b++) {
+                const by = 454 + b * 20;
+                addSocket(`BUF_A${b}`, 1126, by, 'in', `A${b}`, `Buffer Bus Entrée A${b}`);
+                addSocket(`BUF_Y${b}`, 1186, by, 'out', `Y${b}`, `Buffer Bus Sortie Tri-State Y${b}`);
+            }
+
+            addBox(1126, 566, 64, 264, `
+                <div class="silk text-[10px] text-center mt-1">SRG4</div>
+                <div class="silk text-[8px] px-1 mt-2">M 0/3</div>
+                <div class="silk text-[8px] px-1 mt-4">C4 / R</div>
+                <div class="silk text-[8px] px-1 mt-8">1,4D..3,4D</div>
+            `);
+            addSocket('SRG_M0', 1126, 594, 'in', 'M0', 'Registre SRG4 Mode M0 (00:Hold, 01:Right, 10:Left, 11:Load)');
+            addSocket('SRG_M1', 1126, 616, 'in', 'M1', 'Registre SRG4 Mode M1');
+            addSocket('SRG_CLK', 1126, 648, 'in', 'C4', 'Registre SRG4 Horloge C4');
+            addSocket('SRG_RST', 1126, 672, 'in', 'R', 'Registre SRG4 Reset Asynchrone R');
+            addSocket('SRG_SR', 1190, 624, 'in', 'SER_R', 'Registre SRG4 Entrée Série Décalage Droite');
+            addSocket('SRG_SL', 1190, 654, 'in', 'SER_L', 'Registre SRG4 Entrée Série Décalage Gauche');
+
+            for (let b = 0; b < 4; b++) {
+                const by = 716 + b * 28;
+                addSocket(`SRG_D${b}`, 1126, by, 'in', `D${b}`, `Registre SRG4 Entrée Parallèle D${b}`);
+                addSocket(`SRG_Q${b}`, 1190, by, 'out', `Q${b}`, `Registre SRG4 Sortie Q${b}`);
+            }
+
+            // F. RAM 8x4, EEPROM 8x4, ALU [T]
+            addBox(1126, 48, 72, 286, `
+                <div class="silk text-[9px] text-center mt-1">RAM 8x4</div>
+                <div class="silk text-[8px] px-1 mt-3">A 0/7</div>
+                <div class="silk text-[8px] px-1 mt-8">WE / OE / CS</div>
+                <div class="silk text-[8px] text-center mt-10">D0..D3</div>
+            `);
+            for (let a = 0; a < 3; a++) {
+                addSocket(`RAM_A${a}`, 1126, 76 + a * 22, 'in', `A${a}`, `RAM 8×4 Adresse Bit A${a}`);
+            }
+            addSocket('RAM_WE', 1126, 154, 'in', 'WE', 'RAM 8×4 Write Enable (1 = Écrire)');
+            addSocket('RAM_OE', 1126, 176, 'in', 'OE', 'RAM 8×4 Output Enable (1 = Lire vers D0..D3)');
+            addSocket('RAM_CS', 1126, 198, 'in', 'CS', 'RAM 8×4 Chip Select (1 = Sélectionné)');
+            for (let d = 0; d < 4; d++) {
+                const dy = 236 + d * 24;
+                addSocket(`RAM_DI${d}`, 1126, dy, 'in', `DI${d}`, `RAM 8×4 Donnée Entrée D${d}`);
+                addSocket(`RAM_DO${d}`, 1198, dy, 'out', `DO${d}`, `RAM 8×4 Donnée Sortie D${d}`);
+            }
+
+            addBox(1272, 48, 72, 286, `
+                <div class="silk text-[9px] text-center mt-1">EEPROM 8x4</div>
+                <div class="silk text-[8px] px-1 mt-3">A 0/7</div>
+                <div class="silk text-[8px] px-1 mt-8">WE / OE / CS</div>
+                <div class="silk text-[8px] text-center mt-10">D0..D3</div>
+            `);
+            for (let a = 0; a < 3; a++) {
+                addSocket(`EEP_A${a}`, 1272, 76 + a * 22, 'in', `A${a}`, `EEPROM 8×4 Adresse Bit A${a}`);
+            }
+            addSocket('EEP_WE', 1272, 154, 'in', 'WE', 'EEPROM 8×4 Write Enable (Non-Volatil)');
+            addSocket('EEP_OE', 1272, 176, 'in', 'OE', 'EEPROM 8×4 Output Enable');
+            addSocket('EEP_CS', 1272, 198, 'in', 'CS', 'EEPROM 8×4 Chip Select');
+            for (let d = 0; d < 4; d++) {
+                const dy = 236 + d * 24;
+                addSocket(`EEP_DI${d}`, 1272, dy, 'in', `DI${d}`, `EEPROM 8×4 Donnée Entrée D${d}`);
+                addSocket(`EEP_DO${d}`, 1344, dy, 'out', `DO${d}`, `EEPROM 8×4 Donnée Sortie D${d}`);
+            }
+
+            addBox(1272, 468, 72, 362, `
+                <div class="silk text-[9px] text-center mt-1">ALU [T]</div>
+                <div class="silk text-[8px] px-1 mt-6">M 0/31</div>
+                <div class="silk text-[8px] text-right px-1 mt-1">CP / CG / CO</div>
+                <div class="silk text-[8px] px-1 mt-14">P0..P3 / Q0..Q3</div>
+            `);
+            for (let s = 0; s < 5; s++) {
+                const lbl = s < 4 ? `S${s}` : 'M';
+                addSocket(`ALU_${lbl}`, 1272, 492 + s * 22, 'in', lbl, `ALU Sélection Fonction ${lbl}`);
+            }
+            addSocket('ALU_CI', 1288, 616, 'in', 'CI', 'ALU Carry-In (CI)');
+            addSocket('ALU_CP', 1344, 514, 'out', 'CP', 'ALU Carry Propagate');
+            addSocket('ALU_CG', 1344, 536, 'out', 'CG', 'ALU Carry Generate');
+            addSocket('ALU_CO', 1344, 558, 'out', 'CO', 'ALU Carry-Out (CO)');
+            addSocket('ALU_EQ', 1344, 588, 'out', 'P=Q', 'ALU Comparaison P = Q');
+
+            for (let b = 0; b < 4; b++) {
+                const py = 638 + b * 48;
+                addSocket(`ALU_P${b}`, 1272, py, 'in', `P${b}`, `ALU Opérande P${b}`);
+                addSocket(`ALU_Q${b}`, 1272, py + 22, 'in', `Q${b}`, `ALU Opérande Q${b}`);
+                addSocket(`ALU_F${b}`, 1344, py + 11, 'out', `F${b}`, `ALU Résultat Sortie F${b}`);
+            }
+
+            // G. LEDs, MAINS, 7SEG, DB25
+            const ledColors = ['red', 'yellow', 'green'];
+            const ledPrefixes = ['LEDR', 'LEDY', 'LEDG'];
+            for (let grp = 0; grp < 3; grp++) {
+                for (let idx = 0; idx < 4; idx++) {
+                    const ly = 54 + (grp * 4 + idx) * 23;
+                    const pinName = `${ledPrefixes[grp]}${idx + 1}`;
+                    addSocket(pinName, 1418, ly, 'in', `${idx + 1}`, `LED ${ledColors[grp].toUpperCase()} #${idx + 1}`);
+                    addLabel(`${idx + 1}`, 1428, ly - 4, 8);
+
+                    const led = document.createElement('div');
+                    led.className = `board-led ${ledColors[grp]} absolute`;
+                    led.id = `vis_${pinName}`;
+                    led.style.left = '1444px';
+                    led.style.top = `${ly - 5}px`;
+                    boardLayer.appendChild(led);
+                }
+            }
+
+            addLabel('220...240V~ 50/60Hz', 1515, 34, 8);
+            addBox(1524, 52, 54, 30, `<div class="w-9 h-4 mx-auto mt-1 bg-slate-950 border border-slate-400 rounded-sm flex items-center justify-around"><span class="w-1 h-2 bg-slate-300"></span><span class="w-1 h-2 bg-slate-300"></span></div>`);
+            addLabel('MAINS', 1536, 90, 9);
+
+            const mainsBtn = document.createElement('button');
+            mainsBtn.id = 'mainsSwitchBtn';
+            mainsBtn.className = 'absolute w-10 h-16 rounded bg-slate-950 border-2 border-slate-300 flex flex-col overflow-hidden cursor-pointer shadow-xl z-20';
+            mainsBtn.style.left = '1532px';
+            mainsBtn.style.top = '106px';
+            mainsBtn.title = 'Interrupteur Général MAINS (ON/OFF)';
+            mainsBtn.innerHTML = `
+                <div id="mainsTop" class="flex-1 bg-emerald-500 text-slate-950 font-mono-tech font-black text-xs flex items-center justify-center shadow-inner">I</div>
+                <div id="mainsBot" class="flex-1 bg-slate-900 text-slate-500 font-mono-tech font-black text-xs flex items-center justify-center">O</div>
+            `;
+            mainsBtn.onclick = toggleMainsPower;
+            boardLayer.appendChild(mainsBtn);
+
+            addLabel('+5V', 1592, 92, 8);
+            addLabel('0,5A', 1592, 102, 8);
+            const pwrLed = document.createElement('div');
+            pwrLed.id = 'pwr5vLed';
+            pwrLed.className = 'board-led green on absolute';
+            pwrLed.style.left = '1596px';
+            pwrLed.style.top = '122px';
+            boardLayer.appendChild(pwrLed);
+
+            addBox(1454, 356, 148, 286, `
+                <div class="silk text-[10px] text-center mt-1">BIN/7SEG</div>
+            `);
+
+            const segHousing = document.createElement('div');
+            segHousing.className = 'seven-seg-housing absolute flex items-center justify-around px-2 py-1';
+            segHousing.style.left = '1484px';
+            segHousing.style.top = '380px';
+            segHousing.style.width = '92px';
+            segHousing.style.height = '76px';
+            segHousing.innerHTML = `
+                ${createSevenSegSvg('MSD')}
+                ${createSevenSegSvg('LSD')}
+            `;
+            boardLayer.appendChild(segHousing);
+
+            [1, 2, 4, 8].forEach((weight, idx) => {
+                const yUp = 472 + idx * 18;
+                addSocket(`SEG_H${weight}`, 1454, yUp, 'in', `H${weight}`, `Afficheur Gauche (MSD) Entrée BCD Poids ${weight}`);
+                addLabel(`${weight}`, 1464, yUp - 4, 8);
+
+                const yLo = 556 + idx * 18;
+                addSocket(`SEG_L${weight}`, 1454, yLo, 'in', `L${weight}`, `Afficheur Droit (LSD) Entrée BCD Poids ${weight}`);
+                addLabel(`${weight}`, 1464, yLo - 4, 8);
+            });
+
+            ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'x'].forEach((segName, idx) => {
+                const sy = 472 + idx * 20;
+                addSocket(`SEG_RAW_${segName}`, 1602, sy, 'in', segName, `Commande Directe Segment '${segName}'`);
+                addLabel(segName, 1588, sy - 4, 8);
+            });
+
+            addBox(1474, 672, 56, 174, `
+                <div class="w-6 h-36 mx-auto mt-3 bg-slate-900 border-2 border-slate-300 rounded flex flex-col justify-around items-center py-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                </div>
+            `);
+            for (let p = 1; p <= 13; p++) {
+                const py = 678 + (p - 1) * 13.5;
+                addSocket(`DB25_${p}`, 1454, py, 'bidir', `P${p}`, `Connecteur D-Sub 25 Broche ${p}`);
+                addLabel(`${p}`, 1434, py - 4, 8);
+            }
+            addLabel('0V ⊥', 1554, 792, 9);
+            addSocket('DB25_GND', 1592, 796, 'out', '0V', 'Masse Système 0V (GND)');
+        }
+
+        function createSevenSegSvg(prefix) {
+            return `
+                <svg width="36" height="58" viewBox="0 0 60 96">
+                    <polygon id="${prefix}_a" points="12,6 48,6 42,13 18,13" class="seg-dim"/>
+                    <polygon id="${prefix}_b" points="50,8 55,14 52,44 46,40 48,14" class="seg-dim"/>
+                    <polygon id="${prefix}_c" points="46,52 52,48 49,80 43,86 42,56" class="seg-dim"/>
+                    <polygon id="${prefix}_d" points="14,83 41,83 46,90 10,90" class="seg-dim"/>
+                    <polygon id="${prefix}_e" points="9,49 15,53 13,81 7,87 6,54" class="seg-dim"/>
+                    <polygon id="${prefix}_f" points="11,9 17,15 15,41 9,45 7,15" class="seg-dim"/>
+                    <polygon id="${prefix}_g" points="14,47 19,43 42,43 46,47 41,51 18,51" class="seg-dim"/>
+                    <circle id="${prefix}_x" cx="55" cy="88" r="3" class="seg-dim"/>
+                </svg>
+            `;
+        }
+
+        function toggleDataSwitch(idx) {
+            swState[idx] = swState[idx] === 0 ? 1 : 0;
+            document.getElementById(`swRocker_${idx}`).dataset.val = swState[idx];
+            simulateStep();
+        }
+
+        function setupPotentiometerDrag(el) {
+            let dragging = false;
+            let startY = 0;
+            let startV = 0;
+
+            const updatePot = (v) => {
+                potVoltage = Math.max(0, Math.min(5, v));
+                const deg = -135 + (potVoltage / 5) * 270;
+                document.getElementById('potNeedle').style.transform = `translateY(-8px) rotate(${deg}deg)`;
+                simulateStep();
+            };
+
+            el.addEventListener('mousedown', (e) => {
+                dragging = true;
+                startY = e.clientY;
+                startV = potVoltage;
+            });
+            window.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                updatePot(startV + (startY - e.clientY) / 35);
+            });
+            window.addEventListener('mouseup', () => dragging = false);
+
+            el.addEventListener('touchstart', (e) => {
+                dragging = true;
+                startY = e.touches[0].clientY;
+                startV = potVoltage;
+            }, { passive: true });
+            window.addEventListener('touchmove', (e) => {
+                if (!dragging) return;
+                updatePot(startV + (startY - e.touches[0].clientY) / 35);
+            }, { passive: true });
+            window.addEventListener('touchend', () => dragging = false);
+
+            el.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                updatePot(potVoltage + (e.deltaY < 0 ? 0.25 : -0.25));
+            }, { passive: false });
+        }
+
+        function cycleMonoDuration() {
+            if (monoDurationSec === 0.1) monoDurationSec = 1.0;
+            else if (monoDurationSec === 1.0) monoDurationSec = 5.0;
+            else monoDurationSec = 0.1;
+            document.getElementById('monoTimeBtn').textContent = `T = ${monoDurationSec.toFixed(1)}s`;
+        }
+
+        function toggleMainsPower() {
+            mainsOn = !mainsOn;
+            const top = document.getElementById('mainsTop');
+            const bot = document.getElementById('mainsBot');
+            const pwrLed = document.getElementById('pwr5vLed');
+            const ind = document.getElementById('mainsIndicator');
+
+            if (mainsOn) {
+                top.className = 'flex-1 bg-emerald-500 text-slate-950 font-mono-tech font-black text-xs flex items-center justify-center shadow-inner';
+                bot.className = 'flex-1 bg-slate-900 text-slate-500 font-mono-tech font-black text-xs flex items-center justify-center';
+                pwrLed.classList.add('on');
+                ind.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#22c55e]';
+            } else {
+                top.className = 'flex-1 bg-slate-900 text-slate-500 font-mono-tech font-black text-xs flex items-center justify-center';
+                bot.className = 'flex-1 bg-rose-600 text-white font-mono-tech font-black text-xs flex items-center justify-center';
+                pwrLed.classList.remove('on');
+                ind.className = 'w-2.5 h-2.5 rounded-full bg-rose-500';
+                jkState.fill(0);
+                dffState.fill(0);
+                ctr16Val = 0;
+                srg4Val = 0;
+                ramMem.fill(0);
+            }
+            simulateStep();
+        }
+
+        function selectWireColor(mode) {
+            wireColorMode = mode;
+            document.querySelectorAll('header button[id^="col-"]').forEach(b => b.classList.remove('ring-2', 'ring-white'));
+            const btn = document.getElementById(`col-${mode}`);
+            if (btn) btn.classList.add('ring-2', 'ring-white');
+        }
+
+        function onSocketClicked(pinId) {
+            if (!selectedSocket) {
+                selectedSocket = pinId;
+                document.getElementById(`jack_${pinId}`).classList.add('selected');
+                return;
+            }
+            if (selectedSocket === pinId) {
+                document.getElementById(`jack_${pinId}`).classList.remove('selected');
+                selectedSocket = null;
+                return;
+            }
+
+            const sA = sockets[selectedSocket];
+            const sB = sockets[pinId];
+            let from = selectedSocket;
+            let to = pinId;
+
+            if (sA.dir === 'in' && (sB.dir === 'out' || sB.dir === 'analog' || sB.dir === 'bidir')) {
+                from = pinId;
+                to = selectedSocket;
+            }
+
+            patchWires = patchWires.filter(w => w.to !== to);
+
+            const color = wireColorMode === 'auto'
+                ? AUTO_COLORS[autoColorIdx++ % AUTO_COLORS.length]
+                : wireColorMode;
+
+            patchWires.push({
+                id: 'wire_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                from,
+                to,
+                color
+            });
+
+            document.getElementById(`jack_${selectedSocket}`).classList.remove('selected');
+            selectedSocket = null;
+
+            simulateStep();
+            drawPatchWires();
+        }
+
+        function clearWires() {
+            patchWires = [];
+            if (selectedSocket) {
+                document.getElementById(`jack_${selectedSocket}`)?.classList.remove('selected');
+                selectedSocket = null;
+            }
+            simulateStep();
+            drawPatchWires();
+        }
+
+        function drawPatchWires() {
+            const svg = document.getElementById('wiresOverlay');
+            svg.innerHTML = '';
+
+            patchWires.forEach(w => {
+                const s1 = sockets[w.from];
+                const s2 = sockets[w.to];
+                if (!s1 || !s2) return;
+
+                const x1 = s1.x, y1 = s1.y;
+                const x2 = s2.x, y2 = s2.y;
+                const dist = Math.hypot(x2 - x1, y2 - y1);
+                const sag = Math.min(85, Math.max(24, dist * 0.24));
+
+                const cx1 = x1 + (x2 - x1) * 0.28;
+                const cy1 = Math.max(y1, y2) + sag;
+                const cx2 = x1 + (x2 - x1) * 0.72;
+                const cy2 = Math.max(y1, y2) + sag;
+
+                const d = `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`;
+
+                const hit = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                hit.setAttribute('d', d);
+                hit.setAttribute('class', 'wire-hit');
+                hit.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    patchWires = patchWires.filter(item => item.id !== w.id);
+                    simulateStep();
+                    drawPatchWires();
+                });
+
+                const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                shadow.setAttribute('d', `M ${x1} ${y1 + 3} C ${cx1} ${cy1 + 5}, ${cx2} ${cy2 + 5}, ${x2} ${y2 + 3}`);
+                shadow.setAttribute('class', 'wire-shadow');
+
+                const core = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                core.setAttribute('d', d);
+                core.setAttribute('stroke', w.color);
+                core.setAttribute('class', 'wire-core');
+
+                const p1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                p1.setAttribute('cx', x1); p1.setAttribute('cy', y1); p1.setAttribute('r', '4.8');
+                p1.setAttribute('fill', w.color); p1.setAttribute('stroke', '#0f172a'); p1.setAttribute('stroke-width', '1.2');
+
+                const p2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                p2.setAttribute('cx', x2); p2.setAttribute('cy', y2); p2.setAttribute('r', '4.8');
+                p2.setAttribute('fill', w.color); p2.setAttribute('stroke', '#0f172a'); p2.setAttribute('stroke-width', '1.2');
+
+                svg.appendChild(hit);
+                svg.appendChild(shadow);
+                svg.appendChild(core);
+                svg.appendChild(p1);
+                svg.appendChild(p2);
+            });
+        }
+
+        function readPin(inPin, defaultVal = 0) {
+            if (!mainsOn) return 0;
+            const w = patchWires.find(wire => wire.to === inPin);
+            if (!w) return defaultVal;
+            const src = sockets[w.from];
+            if (!src || src.val === null) return defaultVal;
+            return src.val ? 1 : 0;
+        }
+
+        function readAnalogPin(inPin) {
+            if (!mainsOn) return 0;
+            const w = patchWires.find(wire => wire.to === inPin);
+            if (!w) return 0;
+            const src = sockets[w.from];
+            if (!src) return 0;
+            if (src.analogV !== null) return src.analogV;
+            return src.val ? 5.0 : 0.0;
+        }
+
+        function setPin(outPin, val, analogV = null) {
+            if (!sockets[outPin]) return;
+            sockets[outPin].val = mainsOn ? val : 0;
+            sockets[outPin].analogV = mainsOn ? analogV : null;
+        }
+
+        function simulateStep() {
+            if (!mainsOn) {
+                Object.values(sockets).forEach(s => { s.val = 0; s.analogV = null; });
+                refreshBoardVisuals();
+                return;
+            }
+
+            setPin('RAIL_H1', 1); setPin('RAIL_H2', 1);
+            setPin('RAIL_L1', 0); setPin('RAIL_L2', 0);
+            setPin('DB25_GND', 0);
+
+            for (let i = 0; i < 8; i++) {
+                setPin(`SW${i}_Q`, swState[i]);
+                setPin(`SW${i}_Q2`, swState[i]);
+                setPin(`SW${i}_QN`, swState[i] ? 0 : 1);
+            }
+
+            setPin('PULSE_Q', pulserState);
+            setPin('PULSE_QN', pulserState ? 0 : 1);
+
+            setPin('CLK_100K', clkState['100kHz']);
+            Object.keys(clkState).forEach(k => {
+                if (k !== '100kHz') setPin(`CLK_${k}`, clkState[k]);
+            });
+
+            setPin('POT_OUT', potVoltage >= 2.5 ? 1 : 0, potVoltage);
+
+            for (let pass = 0; pass < 4; pass++) {
+                for (let g = 0; g < 7; g++) {
+                    const numIn = g === 0 ? 4 : (g <= 2 ? 3 : 2);
+                    let res = 1;
+                    for (let i = 0; i < numIn; i++) res &= readPin(`AND${g}_I${i}`, 1);
+                    setPin(`AND${g}_Y`, res);
+                }
+
+                for (let g = 0; g < 7; g++) {
+                    const numIn = g === 0 ? 4 : (g <= 2 ? 3 : 2);
+                    if (g === 6) {
+                        let res = 1;
+                        for (let i = 0; i < numIn; i++) res &= readPin(`AND7_I${i}`, 1);
+                        setPin('AND7_Y', res);
+                    } else {
+                        let res = 0;
+                        for (let i = 0; i < numIn; i++) res |= readPin(`OR${g}_I${i}`, 0);
+                        setPin(`OR${g}_Y`, res);
+                    }
+                }
+
+                for (let c = 0; c < 3; c++) {
+                    const a = readPin(`CMB${c}_A`, 0);
+                    const b = readPin(`CMB${c}_B`, 0);
+                    setPin(`CMB${c}_AND`, a & b);
+                    setPin(`CMB${c}_OR`, a | b);
+                }
+
+                const xorA = readPin('XOR_A', 0), xorB = readPin('XOR_B', 0);
+                setPin('XOR_Y', xorA ^ xorB);
+                const xnorA = readPin('XNOR_A', 0), xnorB = readPin('XNOR_B', 0);
+                setPin('XNOR_Y', (xnorA ^ xnorB) ? 0 : 1);
+
+                const c1p = readPin('COMP1_P', 0), c1q = readPin('COMP1_Q', 0);
+                setPin('COMP1_GT', c1p > c1q ? 1 : 0);
+                setPin('COMP1_EQ', c1p === c1q ? 1 : 0);
+                setPin('COMP1_LT', c1p < c1q ? 1 : 0);
+
+                const mTrg = readPin('MONO_TRG', 0);
+                const mRst = readPin('MONO_R', 0);
+                if (mRst) {
+                    monoTimerEnd = 0;
+                } else if (mTrg === 1 && prevMonoTrig === 0) {
+                    monoTimerEnd = performance.now() + monoDurationSec * 1000;
+                }
+                prevMonoTrig = mTrg;
+                const monoActive = performance.now() < monoTimerEnd ? 1 : 0;
+                setPin('MONO_Q', monoActive);
+                setPin('MONO_QN', monoActive ? 0 : 1);
+
+                for (let n = 0; n < 6; n++) setPin(`NOT${n}_Y`, readPin(`NOT${n}_A`, 0) ? 0 : 1);
+                for (let oc = 0; oc < 2; oc++) setPin(`DRV${oc}_Y`, readPin(`DRV${oc}_A`, 0));
+
+                for (let st = 0; st < 2; st++) {
+                    const vIn = readAnalogPin(`SCH${st}_A`);
+                    if (vIn >= 3.3) schmittState[st] = 1;
+                    else if (vIn <= 1.7) schmittState[st] = 0;
+                    setPin(`SCH${st}_Y`, schmittState[st]);
+                }
+
+                for (let a = 0; a < 2; a++) {
+                    const pVal = (readPin(`ADD${a}_P3`) << 3) | (readPin(`ADD${a}_P2`) << 2) | (readPin(`ADD${a}_P1`) << 1) | readPin(`ADD${a}_P0`);
+                    const qVal = (readPin(`ADD${a}_Q3`) << 3) | (readPin(`ADD${a}_Q2`) << 2) | (readPin(`ADD${a}_Q1`) << 1) | readPin(`ADD${a}_Q0`);
+                    const sum = pVal + qVal + readPin(`ADD${a}_CI`);
+                    for (let b = 0; b < 4; b++) setPin(`ADD${a}_S${b}`, (sum >> b) & 1);
+                    setPin(`ADD${a}_CO`, (sum >> 4) & 1);
+                }
+
+                const cmpP = (readPin('CMP4_P3') << 3) | (readPin('CMP4_P2') << 2) | (readPin('CMP4_P1') << 1) | readPin('CMP4_P0');
+                const cmpQ = (readPin('CMP4_Q3') << 3) | (readPin('CMP4_Q2') << 2) | (readPin('CMP4_Q1') << 1) | readPin('CMP4_Q0');
+                if (cmpP > cmpQ) { setPin('CMP4_GT', 1); setPin('CMP4_EQ', 0); setPin('CMP4_LT', 0); }
+                else if (cmpP < cmpQ) { setPin('CMP4_GT', 0); setPin('CMP4_EQ', 0); setPin('CMP4_LT', 1); }
+                else {
+                    const iGt = readPin('CMP4_IGT', 0), iLt = readPin('CMP4_ILT', 0), iEq = readPin('CMP4_IEQ', 1);
+                    setPin('CMP4_GT', iGt); setPin('CMP4_LT', iLt); setPin('CMP4_EQ', (!iGt && !iLt && iEq) ? 1 : 0);
+                }
+
+                const muxEn = readPin('MUX_EN', 0);
+                const muxSel = (readPin('MUX_S1') << 1) | readPin('MUX_S0');
+                const muxOut = muxEn === 0 ? readPin(`MUX_I${muxSel}`, 0) : 0;
+                setPin('MUX_Y', muxOut);
+                setPin('MUX_YN', muxOut ? 0 : 1);
+
+                const dxEn = readPin('DX_EN', 1);
+                const dxSel = (readPin('DX_S1') << 1) | readPin('DX_S0');
+                for (let i = 0; i < 4; i++) setPin(`DX_O${i}`, (dxEn && dxSel === i) ? 1 : 0);
+
+                const adcVin = readAnalogPin('ADC_IN');
+                const adcCode = Math.min(15, Math.max(0, Math.round((adcVin / 5.0) * 15)));
+                for (let b = 0; b < 4; b++) setPin(`ADC_D${b}`, (adcCode >> b) & 1);
+                setPin('ADC_EOC', 1);
+
+                const dacCode = (readPin('DAC_D3') << 3) | (readPin('DAC_D2') << 2) | (readPin('DAC_D1') << 1) | readPin('DAC_D0');
+                const dacVout = (dacCode / 15) * 5.0;
+                setPin('DAC_OUT', dacVout >= 2.5 ? 1 : 0, dacVout);
+
+                const bufEn = readPin('BUF_EN', 1);
+                for (let b = 0; b < 4; b++) {
+                    setPin(`BUF_Y${b}`, bufEn ? readPin(`BUF_A${b}`, 0) : null);
+                }
+            }
+
+            for (let j = 0; j < 4; j++) {
+                const s = readPin(`JK${j}_S`, 0), r = readPin(`JK${j}_R`, 0), c = readPin(`JK${j}_C`, 0);
+                if (s && !r) jkState[j] = 1;
+                else if (r && !s) jkState[j] = 0;
+                else if (c === 1 && prevJkClk[j] === 0) {
+                    const inJ = readPin(`JK${j}_J`, 0), inK = readPin(`JK${j}_K`, 0);
+                    if (inJ && !inK) jkState[j] = 1;
+                    else if (!inJ && inK) jkState[j] = 0;
+                    else if (inJ && inK) jkState[j] = jkState[j] ? 0 : 1;
+                }
+                prevJkClk[j] = c;
+                setPin(`JK${j}_Q`, jkState[j]);
+                setPin(`JK${j}_QN`, jkState[j] ? 0 : 1);
+            }
+
+            for (let d = 0; d < 4; d++) {
+                const c = readPin(`DFF${d}_C`, 0);
+                if (c === 1 && prevDffClk[d] === 0) dffState[d] = readPin(`DFF${d}_D`, 0);
+                prevDffClk[d] = c;
+                setPin(`DFF${d}_Q`, dffState[d]);
+                setPin(`DFF${d}_QN`, dffState[d] ? 0 : 1);
+            }
+
+            const ctrRst = readPin('CTR_RST', 0);
+            const ctrClk = readPin('CTR_CLK', 0);
+            const ctrEn = readPin('CTR_EN', 1);
+            const ctrDir = readPin('CTR_DIR', 0);
+            if (ctrRst) {
+                ctr16Val = 0;
+            } else if (ctrClk === 1 && prevCtr16Clk === 0 && ctrEn) {
+                ctr16Val = ctrDir === 0 ? ((ctr16Val + 1) & 0x0F) : ((ctr16Val - 1 + 16) & 0x0F);
+            }
+            prevCtr16Clk = ctrClk;
+            for (let b = 0; b < 4; b++) setPin(`CTR_Q${b}`, (ctr16Val >> b) & 1);
+            setPin('CTR_TC15', ctr16Val === 15 ? 1 : 0);
+            setPin('CTR_TC0', ctr16Val === 0 ? 1 : 0);
+
+            const srgRst = readPin('SRG_RST', 0);
+            const srgClk = readPin('SRG_CLK', 0);
+            if (srgRst) {
+                srg4Val = 0;
+            } else if (srgClk === 1 && prevSrg4Clk === 0) {
+                const mode = (readPin('SRG_M1', 0) << 1) | readPin('SRG_M0', 0);
+                if (mode === 1) {
+                    const serR = readPin('SRG_SR', 0);
+                    srg4Val = ((srg4Val >> 1) | (serR << 3)) & 0x0F;
+                } else if (mode === 2) {
+                    const serL = readPin('SRG_SL', 0);
+                    srg4Val = ((srg4Val << 1) | serL) & 0x0F;
+                } else if (mode === 3) {
+                    srg4Val = (readPin('SRG_D3') << 3) | (readPin('SRG_D2') << 2) | (readPin('SRG_D1') << 1) | readPin('SRG_D0');
+                }
+            }
+            prevSrg4Clk = srgClk;
+            for (let b = 0; b < 4; b++) setPin(`SRG_Q${b}`, (srg4Val >> b) & 1);
+
+            const ramAdr = (readPin('RAM_A2') << 2) | (readPin('RAM_A1') << 1) | readPin('RAM_A0');
+            const ramCs = readPin('RAM_CS', 1), ramWe = readPin('RAM_WE', 0), ramOe = readPin('RAM_OE', 1);
+            if (ramCs && ramWe) {
+                ramMem[ramAdr] = (readPin('RAM_DI3') << 3) | (readPin('RAM_DI2') << 2) | (readPin('RAM_DI1') << 1) | readPin('RAM_DI0');
+            }
+            for (let d = 0; d < 4; d++) {
+                setPin(`RAM_DO${d}`, (ramCs && ramOe) ? ((ramMem[ramAdr] >> d) & 1) : null);
+            }
+
+            const eepAdr = (readPin('EEP_A2') << 2) | (readPin('EEP_A1') << 1) | readPin('EEP_A0');
+            const eepCs = readPin('EEP_CS', 1), eepWe = readPin('EEP_WE', 0), eepOe = readPin('EEP_OE', 1);
+            if (eepCs && eepWe) {
+                eepromMem[eepAdr] = (readPin('EEP_DI3') << 3) | (readPin('EEP_DI2') << 2) | (readPin('EEP_DI1') << 1) | readPin('EEP_DI0');
+            }
+            for (let d = 0; d < 4; d++) {
+                setPin(`EEP_DO${d}`, (eepCs && eepOe) ? ((eepromMem[eepAdr] >> d) & 1) : null);
+            }
+
+            const aluP = (readPin('ALU_P3') << 3) | (readPin('ALU_P2') << 2) | (readPin('ALU_P1') << 1) | readPin('ALU_P0');
+            const aluQ = (readPin('ALU_Q3') << 3) | (readPin('ALU_Q2') << 2) | (readPin('ALU_Q1') << 1) | readPin('ALU_Q0');
+            const aluSel = (readPin('ALU_S3') << 3) | (readPin('ALU_S2') << 2) | (readPin('ALU_S1') << 1) | readPin('ALU_S0');
+            const aluMode = readPin('ALU_M', 0);
+            const aluCi = readPin('ALU_CI', 0);
+            let aluRes = 0, aluCo = 0;
+
+            if (aluMode === 1) {
+                switch (aluSel & 0x07) {
+                    case 0: aluRes = (~aluP) & 0x0F; break;
+                    case 1: aluRes = (~(aluP | aluQ)) & 0x0F; break;
+                    case 2: aluRes = (aluP & aluQ) & 0x0F; break;
+                    case 3: aluRes = (aluP | aluQ) & 0x0F; break;
+                    case 4: aluRes = (aluP ^ aluQ) & 0x0F; break;
+                    case 5: aluRes = (~(aluP & aluQ)) & 0x0F; break;
+                    case 6: aluRes = (~(aluP ^ aluQ)) & 0x0F; break;
+                    default: aluRes = aluP & 0x0F; break;
+                }
+            } else {
+                switch (aluSel & 0x07) {
+                    case 0: { const t = aluP + aluCi; aluRes = t & 0x0F; aluCo = (t >> 4) & 1; break; }
+                    case 1: { const t = aluP + aluQ + aluCi; aluRes = t & 0x0F; aluCo = (t >> 4) & 1; break; }
+                    case 2: { const t = aluP - aluQ - (aluCi ? 0 : 1); aluRes = (t + 16) & 0x0F; aluCo = t >= 0 ? 1 : 0; break; }
+                    case 3: { const t = aluP - 1 + aluCi; aluRes = (t + 16) & 0x0F; aluCo = t >= 0 ? 1 : 0; break; }
+                    default: { const t = aluP + aluQ; aluRes = t & 0x0F; aluCo = (t >> 4) & 1; break; }
+                }
+            }
+            for (let b = 0; b < 4; b++) setPin(`ALU_F${b}`, (aluRes >> b) & 1);
+            setPin('ALU_CO', aluCo);
+            setPin('ALU_CP', (aluP | aluQ) === 0x0F ? 1 : 0);
+            setPin('ALU_CG', (aluP & aluQ) !== 0 ? 1 : 0);
+            setPin('ALU_EQ', aluP === aluQ ? 1 : 0);
+
+            patchWires.forEach(w => {
+                if (sockets[w.from] && sockets[w.to]) {
+                    sockets[w.to].val = sockets[w.from].val;
+                    sockets[w.to].analogV = sockets[w.from].analogV;
+                }
+            });
+
+            refreshBoardVisuals();
+        }
+
+        const HEX_SEGMENTS = {
+            0:[1,1,1,1,1,1,0], 1:[0,1,1,0,0,0,0], 2:[1,1,0,1,1,0,1], 3:[1,1,1,1,0,0,1],
+            4:[0,1,1,0,0,1,1], 5:[1,0,1,1,0,1,1], 6:[1,0,1,1,1,1,1], 7:[1,1,1,0,0,0,0],
+            8:[1,1,1,1,1,1,1], 9:[1,1,1,1,0,1,1], 10:[1,1,1,0,1,1,1], 11:[0,0,1,1,1,1,1],
+            12:[1,0,0,1,1,1,0], 13:[0,1,1,1,1,0,1], 14:[1,0,0,1,1,1,1], 15:[1,0,0,0,1,1,1]
+        };
+
+        function refreshBoardVisuals() {
+            for (let i = 0; i < 8; i++) {
+                document.getElementById(`swLed_${i}`).classList.toggle('on', mainsOn && swState[i] === 1);
+            }
+
+            ['LEDR', 'LEDY', 'LEDG'].forEach(pref => {
+                for (let idx = 1; idx <= 4; idx++) {
+                    const pin = `${pref}${idx}`;
+                    const on = mainsOn && readPin(pin, 0) === 1;
+                    document.getElementById(`vis_${pin}`).classList.toggle('on', on);
+                }
+            });
+
+            const msdVal = (readPin('SEG_H8') << 3) | (readPin('SEG_H4') << 2) | (readPin('SEG_H2') << 1) | readPin('SEG_H1');
+            const lsdVal = (readPin('SEG_L8') << 3) | (readPin('SEG_L4') << 2) | (readPin('SEG_L2') << 1) | readPin('SEG_L1');
+            const segLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+
+            const msdPattern = mainsOn ? HEX_SEGMENTS[msdVal] : [0,0,0,0,0,0,0];
+            const lsdPattern = mainsOn ? HEX_SEGMENTS[lsdVal] : [0,0,0,0,0,0,0];
+
+            segLetters.forEach((ltr, idx) => {
+                const rawOverride = readPin(`SEG_RAW_${ltr}`, 0);
+                document.getElementById(`MSD_${ltr}`).setAttribute('class', msdPattern[idx] ? 'seg-lit' : 'seg-dim');
+                document.getElementById(`LSD_${ltr}`).setAttribute('class', (lsdPattern[idx] || rawOverride) ? 'seg-lit' : 'seg-dim');
+            });
+            document.getElementById('LSD_x').setAttribute('class', (mainsOn && readPin('SEG_RAW_x', 0)) ? 'seg-lit' : 'seg-dim');
+
+            Object.values(sockets).forEach(s => {
+                const el = document.getElementById(`jack_${s.id}`);
+                if (!el) return;
+                el.classList.remove('sig-high', 'sig-analog', 'sig-hiz');
+                if (!mainsOn) return;
+                if (s.analogV !== null) el.classList.add('sig-analog');
+                else if (s.val === null) el.classList.add('sig-hiz');
+                else if (s.val === 1) el.classList.add('sig-high');
+            });
+
+            if (!document.getElementById('memDrawer').classList.contains('hidden')) {
+                renderMemoryTables();
+            }
+        }
+
+        function renderMemoryTables() {
+            const ramAdr = (readPin('RAM_A2') << 2) | (readPin('RAM_A1') << 1) | readPin('RAM_A0');
+            const eepAdr = (readPin('EEP_A2') << 2) | (readPin('EEP_A1') << 1) | readPin('EEP_A0');
+
+            document.getElementById('ramStatusBadge').textContent = `Adr: ${ramAdr} | CS:${readPin('RAM_CS',1)} WE:${readPin('RAM_WE',0)} OE:${readPin('RAM_OE',1)}`;
+            document.getElementById('eepromStatusBadge').textContent = `Adr: ${eepAdr} | CS:${readPin('EEP_CS',1)} WE:${readPin('EEP_WE',0)} OE:${readPin('EEP_OE',1)}`;
+
+            const ramEl = document.getElementById('ramGridView');
+            ramEl.innerHTML = ramMem.map((val, idx) => `
+                <div class="p-1 rounded border text-center ${idx === ramAdr ? 'border-amber-400 bg-amber-500/20 text-white' : 'border-slate-800 text-slate-400'}">
+                    <div class="text-[9px] text-slate-500">@${idx}</div>
+                    <div class="font-bold">${val.toString(2).padStart(4, '0')}</div>
+                    <div class="text-[10px] text-amber-300">0x${val.toString(16).toUpperCase()}</div>
+                </div>
+            `).join('');
+
+            const eepEl = document.getElementById('eepromGridView');
+            eepEl.innerHTML = eepromMem.map((val, idx) => `
+                <div class="p-1 rounded border text-center ${idx === eepAdr ? 'border-emerald-400 bg-emerald-500/20 text-white' : 'border-slate-800 text-slate-400'}">
+                    <div class="text-[9px] text-slate-500">@${idx}</div>
+                    <div class="font-bold">${val.toString(2).padStart(4, '0')}</div>
+                    <div class="text-[10px] text-emerald-300">0x${val.toString(16).toUpperCase()}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadLabPreset(key) {
+            if (!key) return;
+            clearWires();
+            if (key === 'empty') return;
+
+            const addW = (from, to, color) => patchWires.push({ id: 'p_' + Math.random(), from, to, color });
+
+            if (key === 'adder') {
+                [0, 1, 2, 3].forEach(b => {
+                    addW(`SW${b}_Q`, `ADD0_P${b}`, '#eab308');
+                    addW(`SW${b + 4}_Q`, `ADD0_Q${b}`, '#3b82f6');
+                });
+                addW('ADD0_S0', 'SEG_L1', '#22c55e');
+                addW('ADD0_S1', 'SEG_L2', '#22c55e');
+                addW('ADD0_S2', 'SEG_L4', '#22c55e');
+                addW('ADD0_S3', 'SEG_L8', '#22c55e');
+                addW('ADD0_CO', 'LEDR1', '#ef4444');
+            } else if (key === 'counter') {
+                addW('CLK_1Hz', 'CTR_CLK', '#eab308');
+                addW('SW0_Q', 'CTR_RST', '#ef4444');
+                addW('SW1_Q', 'CTR_DIR', '#3b82f6');
+                addW('CTR_Q0', 'SEG_L1', '#22c55e');
+                addW('CTR_Q1', 'SEG_L2', '#22c55e');
+                addW('CTR_Q2', 'SEG_L4', '#22c55e');
+                addW('CTR_Q3', 'SEG_L8', '#22c55e');
+                addW('CTR_Q0', 'LEDG1', '#22c55e');
+                addW('CTR_Q1', 'LEDG2', '#22c55e');
+                addW('CTR_Q2', 'LEDG3', '#22c55e');
+                addW('CTR_Q3', 'LEDG4', '#22c55e');
+            } else if (key === 'shift') {
+                addW('CLK_1Hz', 'SRG_CLK', '#eab308');
+                addW('SW0_Q', 'SRG_M0', '#3b82f6');
+                addW('SW1_Q', 'SRG_M1', '#3b82f6');
+                addW('SW2_Q', 'SRG_SR', '#22c55e');
+                addW('SRG_Q0', 'LEDY1', '#eab308');
+                addW('SRG_Q1', 'LEDY2', '#eab308');
+                addW('SRG_Q2', 'LEDY3', '#eab308');
+                addW('SRG_Q3', 'LEDY4', '#eab308');
+            } else if (key === 'alu') {
+                [0, 1, 2, 3].forEach(b => {
+                    addW(`SW${b}_Q`, `ALU_P${b}`, '#eab308');
+                    addW(`SW${b + 4}_Q`, `ALU_Q${b}`, '#3b82f6');
+                });
+                addW('PULSE_Q', 'ALU_S0', '#ef4444');
+                addW('ALU_F0', 'SEG_L1', '#22c55e');
+                addW('ALU_F1', 'SEG_L2', '#22c55e');
+                addW('ALU_F2', 'SEG_L4', '#22c55e');
+                addW('ALU_F3', 'SEG_L8', '#22c55e');
+                addW('ALU_CO', 'LEDR1', '#ef4444');
+                addW('ALU_EQ', 'LEDG1', '#22c55e');
+            } else if (key === 'memory') {
+                addW('SW0_Q', 'RAM_A0', '#3b82f6');
+                addW('SW1_Q', 'RAM_A1', '#3b82f6');
+                addW('SW2_Q', 'RAM_A2', '#3b82f6');
+                addW('SW4_Q', 'RAM_DI0', '#eab308');
+                addW('SW5_Q', 'RAM_DI1', '#eab308');
+                addW('SW6_Q', 'RAM_DI2', '#eab308');
+                addW('SW7_Q', 'RAM_DI3', '#eab308');
+                addW('PULSE_Q', 'RAM_WE', '#ef4444');
+                addW('RAM_DO0', 'SEG_L1', '#22c55e');
+                addW('RAM_DO1', 'SEG_L2', '#22c55e');
+                addW('RAM_DO2', 'SEG_L4', '#22c55e');
+                addW('RAM_DO3', 'SEG_L8', '#22c55e');
+                document.getElementById('memDrawer').classList.remove('hidden');
+            } else if (key === 'adc_dac') {
+                addW('POT_OUT', 'ADC_IN', '#ec4899');
+                addW('ADC_D0', 'LEDR1', '#ef4444');
+                addW('ADC_D1', 'LEDR2', '#ef4444');
+                addW('ADC_D2', 'LEDR3', '#ef4444');
+                addW('ADC_D3', 'LEDR4', '#ef4444');
+                addW('ADC_D0', 'SEG_L1', '#22c55e');
+                addW('ADC_D1', 'SEG_L2', '#22c55e');
+                addW('ADC_D2', 'SEG_L4', '#22c55e');
+                addW('ADC_D3', 'SEG_L8', '#22c55e');
+                addW('ADC_D0', 'DAC_D0', '#3b82f6');
+                addW('ADC_D1', 'DAC_D1', '#3b82f6');
+                addW('ADC_D2', 'DAC_D2', '#3b82f6');
+                addW('ADC_D3', 'DAC_D3', '#3b82f6');
+            }
+
+            simulateStep();
+            drawPatchWires();
+        }
+
+        function adjustZoom(delta) {
+            boardZoom = Math.max(0.35, Math.min(1.6, +(boardZoom + delta).toFixed(2)));
+            applyZoom();
+        }
+
+        function fitBoardToScreen() {
+            const vp = document.getElementById('benchViewport');
+            const scaleW = (vp.clientWidth - 28) / 1740;
+            const scaleH = (vp.clientHeight - 28) / 920;
+            boardZoom = Math.max(0.35, Math.min(1.25, +Math.min(scaleW, scaleH).toFixed(2)));
+            applyZoom();
+        }
+
+        function applyZoom() {
+            document.getElementById('hpsBoard').style.transform = `scale(${boardZoom})`;
+            document.getElementById('zoomLabel').textContent = `${Math.round(boardZoom * 100)}%`;
+        }
+
+        function toggleDrawer(id) {
+            document.getElementById(id).classList.toggle('hidden');
+            if (id === 'memDrawer') renderMemoryTables();
+        }
+
+        function renderOscilloscope() {
+            const drawer = document.getElementById('scopeDrawer');
+            if (drawer.classList.contains('hidden')) return;
+
+            const adcCode = (sockets['ADC_D3'].val << 3) | (sockets['ADC_D2'].val << 2) | (sockets['ADC_D1'].val << 1) | sockets['ADC_D0'].val;
+            const dacV = sockets['DAC_OUT'].analogV !== null ? sockets['DAC_OUT'].analogV : 0;
+            document.getElementById('analogScopeReadout').textContent =
+                `Pot G- : ${potVoltage.toFixed(2)} V | DAC : ${dacV.toFixed(2)} V | ADC : ${adcCode.toString(2).padStart(4, '0')} (${adcCode})`;
+
+            const canvas = document.getElementById('scopeCanvas');
+            const rect = canvas.getBoundingClientRect();
+            if (canvas.width !== rect.width || canvas.height !== rect.height) {
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+            }
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width, h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const tracks = [
+                { key: 'SW0', label: 'SW0', color: '#eab308', analog: false },
+                { key: 'SW1', label: 'SW1', color: '#38bdf8', analog: false },
+                { key: 'CLK1HZ', label: '1Hz', color: '#f97316', analog: false },
+                { key: 'LED_R1', label: 'LED R1', color: '#ef4444', analog: false },
+                { key: 'LED_Y1', label: 'LED Y1', color: '#22c55e', analog: false },
+                { key: 'POT_V', label: 'POT V', color: '#ec4899', analog: true }
+            ];
+
+            const rowH = h / tracks.length;
+            const dx = (w - 64) / (SCOPE_SAMPLES - 1);
+
+            tracks.forEach((tr, idx) => {
+                const topY = idx * rowH;
+                ctx.fillStyle = tr.color;
+                ctx.font = 'bold 10px JetBrains Mono';
+                ctx.fillText(tr.label, 8, topY + rowH * 0.65);
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+                ctx.beginPath();
+                ctx.moveTo(58, topY + rowH - 1);
+                ctx.lineTo(w, topY + rowH - 1);
+                ctx.stroke();
+
+                const arr = scopeBuffers[tr.key];
+                ctx.strokeStyle = tr.color;
+                ctx.lineWidth = 1.8;
+                ctx.beginPath();
+                arr.forEach((v, i) => {
+                    const x = 58 + i * dx;
+                    const norm = tr.analog ? (v / 5.0) : v;
+                    const y = topY + rowH - 4 - norm * (rowH - 8);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else {
+                        if (!tr.analog) {
+                            const prevY = topY + rowH - 4 - arr[i - 1] * (rowH - 8);
+                            if (prevY !== y) ctx.lineTo(x, prevY);
+                        }
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+            });
+        }
+
+        setInterval(() => {
+            masterTick++;
+            clkState['100kHz'] = masterTick % 2;
+            clkState['10kHz'] = masterTick % 2;
+            clkState['1kHz'] = masterTick % 2;
+            clkState['100Hz'] = masterTick % 2;
+            if (masterTick % 1 === 0) clkState['10Hz'] = clkState['10Hz'] ? 0 : 1;
+            if (masterTick % 10 === 0) clkState['1Hz'] = clkState['1Hz'] ? 0 : 1;
+            if (masterTick % 100 === 0) clkState['0.1Hz'] = clkState['0.1Hz'] ? 0 : 1;
+
+            simulateStep();
+
+            const push = (k, val) => {
+                scopeBuffers[k].push(val);
+                if (scopeBuffers[k].length > SCOPE_SAMPLES) scopeBuffers[k].shift();
+            };
+            push('SW0', swState[0]);
+            push('SW1', swState[1]);
+            push('CLK1HZ', clkState['1Hz']);
+            push('LED_R1', readPin('LEDR1', 0));
+            push('LED_Y1', readPin('LEDY1', 0));
+            push('POT_V', potVoltage);
+
+            renderOscilloscope();
+        }, 50);
+
+        // Drag-to-pan on empty bench area (Mouse + Touch)
+        const viewport = document.getElementById('benchViewport');
+        let panning = false, panStartX = 0, panStartY = 0, scrollStartX = 0, scrollStartY = 0;
+
+        viewport.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.jack, .lh-rocker, button, #potKnobVisual')) return;
+            panning = true;
+            panStartX = e.clientX;
+            panStartY = e.clientY;
+            scrollStartX = viewport.scrollLeft;
+            scrollStartY = viewport.scrollTop;
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (!panning) return;
+            viewport.scrollLeft = scrollStartX - (e.clientX - panStartX);
+            viewport.scrollTop = scrollStartY - (e.clientY - panStartY);
+        });
+        window.addEventListener('mouseup', () => panning = false);
+
+        window.addEventListener('resize', fitBoardToScreen);
+
+        // Initialize Board
+        buildCompleteBoard();
+        fitBoardToScreen();
+        simulateStep();
+    </script>
+</body>
+</html>
