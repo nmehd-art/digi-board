@@ -40,7 +40,6 @@
             font-family: 'Cairo', sans-serif;
         }
 
-        /* Welcome Screen Animations */
         @keyframes floatSlow {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-6px); }
@@ -58,7 +57,6 @@
             background-size: 100% 100%, 32px 32px, 32px 32px;
         }
 
-        /* Viewport Pan/Zoom Container */
         #benchViewport {
             flex: 1;
             overflow: auto;
@@ -71,7 +69,6 @@
             cursor: grabbing;
         }
 
-        /* Authentic HPS SystemTechnik Matte Royal-Blue Silkscreen PCB */
         .hps-pcb {
             width: 1740px;
             height: 920px;
@@ -91,7 +88,6 @@
             margin: 16px;
         }
 
-        /* Slotted PCB Mounting Screws */
         .pcb-screw {
             position: absolute;
             width: 15px;
@@ -113,7 +109,6 @@
             transform: translateY(-50%) rotate(32deg);
         }
 
-        /* Crisp White IEC-60617 Silkscreen Block */
         .iec-box {
             position: absolute;
             border: 1.5px solid rgba(255, 255, 255, 0.92);
@@ -133,7 +128,18 @@
             text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
         }
 
-        /* 2mm Banana Jack Sockets */
+        .neg-bubble {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            border: 1.5px solid #ffffff;
+            background: var(--pcb-royal);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 22;
+        }
+
         .jack {
             position: absolute;
             width: 13px;
@@ -148,7 +154,6 @@
             transition: transform 0.08s ease, box-shadow 0.1s ease;
         }
 
-        /* Larger touch target for mobile/tablet users */
         .jack::before {
             content: '';
             position: absolute;
@@ -194,7 +199,6 @@
             background: #64748b;
         }
 
-        /* Left Column L / H Dual Pushbutton Switch */
         .lh-unit {
             position: absolute;
             display: flex;
@@ -243,7 +247,6 @@
             box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.45);
         }
 
-        /* Board LEDs */
         .board-led {
             width: 11px;
             height: 11px;
@@ -269,7 +272,6 @@
             border-color: #fff;
         }
 
-        /* 7-Segment Display Unit */
         .seven-seg-housing {
             background: #141923;
             border: 2px solid #cbd5e1;
@@ -284,7 +286,6 @@
             fill: #29181a;
         }
 
-        /* Patch-Cord SVG Overlay */
         #wiresOverlay {
             position: absolute;
             inset: 0;
@@ -320,31 +321,32 @@
 </head>
 <body>
 
-    <!-- ==================== BILINGUAL WELCOME GATEWAY OVERLAY ==================== -->
+    <!-- ==================== WELCOME GATEWAY ==================== -->
     <div id="welcomeOverlay" class="fixed inset-0 z-[100] welcome-grid-bg overflow-y-auto flex items-center justify-center p-4 sm:p-6 transition-opacity duration-300">
         <div class="w-full max-w-2xl bg-[#0d1525]/95 backdrop-blur-xl border border-sky-500/30 rounded-2xl shadow-[0_25px_70px_rgba(0,0,0,0.9)] overflow-hidden">
             
-            <!-- Top Accent Bar & Language Switcher -->
             <div class="bg-gradient-to-r from-[#164475] via-[#1c538f] to-[#0f3054] px-5 py-3 flex items-center justify-between border-b border-sky-400/20">
                 <div class="flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                     <span class="font-mono-tech text-xs sm:text-sm font-bold tracking-wider text-white">HPS DIGI BOARD 2 [3910]</span>
                 </div>
 
-                <!-- Language Toggle Buttons (FR / AR) -->
-                <div class="flex items-center bg-slate-950/70 p-1 rounded-lg border border-white/15">
-                    <button id="btnLangFr" onclick="setWelcomeLang('fr')" class="px-2.5 py-1 rounded-md text-xs font-bold transition-all bg-sky-500 text-slate-950 shadow cursor-pointer">
-                        Français
+                <div class="flex items-center gap-2">
+                    <button onclick="playAudioAnnouncement()" class="px-2.5 py-1 rounded-md text-xs font-bold bg-pink-500/20 text-pink-300 border border-pink-400/50 hover:bg-pink-500/30 transition-all cursor-pointer flex items-center gap-1.5" title="استماع للصوت التعريفي">
+                        <span>🔊</span> <span class="font-arabic">صوت الإنشاء</span>
                     </button>
-                    <button id="btnLangAr" onclick="setWelcomeLang('ar')" class="px-2.5 py-1 rounded-md text-xs font-bold font-arabic transition-all text-slate-300 hover:text-white cursor-pointer">
-                        العربية
-                    </button>
+                    <div class="flex items-center bg-slate-950/70 p-1 rounded-lg border border-white/15">
+                        <button id="btnLangFr" onclick="setWelcomeLang('fr')" class="px-2.5 py-1 rounded-md text-xs font-bold transition-all bg-sky-500 text-slate-950 shadow cursor-pointer">
+                            Français
+                        </button>
+                        <button id="btnLangAr" onclick="setWelcomeLang('ar')" class="px-2.5 py-1 rounded-md text-xs font-bold font-arabic transition-all text-slate-300 hover:text-white cursor-pointer">
+                            العربية
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Main Welcome Card Content -->
             <div id="welcomeContentBox" class="p-6 sm:p-8 text-center" dir="ltr">
-                <!-- Badge -->
                 <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 text-xs sm:text-sm font-semibold mb-4 animate-float">
                     <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
@@ -352,17 +354,14 @@
                     <span id="wBadgeText">Filière : Gestion Réseau et Sécurité (GRS)</span>
                 </div>
 
-                <!-- Main Greeting -->
                 <h1 id="wTitle" class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-snug mb-3">
                     Bienvenue aux étudiants de <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">Gestion Réseau et Sécurité</span>
                 </h1>
 
-                <!-- Subtitle / Lab Description -->
                 <p id="wDesc" class="text-slate-300 text-sm sm:text-base max-w-xl mx-auto leading-relaxed mb-6">
                     Simulateur interactif complet de la maquette numérique <strong>HPS DIGI BOARD 2 (3910)</strong> pour vos travaux pratiques d'électronique numérique et architecture des ordinateurs. Compatible PC, Tablette et Smartphone.
                 </p>
 
-                <!-- Author Attribution Card -->
                 <div class="bg-slate-900/90 border border-slate-700/80 rounded-xl p-4 mb-5 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center font-mono-tech font-extrabold text-white text-base shadow-lg shrink-0">
@@ -378,7 +377,6 @@
                     </span>
                 </div>
 
-                <!-- Support & TikTok Section -->
                 <div class="bg-[#090e1a] border border-pink-500/30 rounded-xl p-4 mb-6">
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
                         <div class="flex items-center gap-2.5">
@@ -399,7 +397,6 @@
                     </div>
                 </div>
 
-                <!-- Enter Lab CTA Button -->
                 <button onclick="enterSimulator()" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-500 to-emerald-500 hover:from-sky-400 hover:to-emerald-400 text-slate-950 font-extrabold text-sm sm:text-base tracking-wide shadow-[0_10px_30px_rgba(14,165,233,0.4)] transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center justify-center gap-2 mx-auto">
                     <span id="wEnterBtnText">Accéder au Laboratoire (Simulateur TP)</span>
                     <svg id="wEnterArrow" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -410,11 +407,14 @@
         </div>
     </div>
 
-    <!-- ==================== TOP LAB CONTROL BAR ==================== -->
+    <!-- ==================== TOP CONTROL BAR ==================== -->
     <header class="bg-[#0f172a] border-b border-slate-800 px-2.5 sm:px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 z-50 shrink-0 shadow-lg">
         <div class="flex items-center gap-2">
             <button onclick="showWelcomeModal()" class="px-2 py-1 rounded-md bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-[11px] font-bold cursor-pointer" title="Retour à l'accueil / Support">
                 ☰ Info
+            </button>
+            <button onclick="playAudioAnnouncement()" class="px-2 py-1 rounded-md bg-pink-500/15 hover:bg-pink-500/25 border border-pink-400/40 text-pink-300 text-[11px] font-bold cursor-pointer flex items-center gap-1" title="إعادة الاستماع للصوت">
+                <span>🔊</span> <span class="font-arabic">صوت التصميم</span>
             </button>
             <span id="mainsIndicator" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#22c55e]"></span>
             <span class="font-mono-tech font-extrabold text-xs sm:text-sm text-white tracking-wider">
@@ -425,7 +425,6 @@
             </span>
         </div>
 
-        <!-- Wire Color Palette -->
         <div class="flex items-center gap-1.5 bg-slate-900 px-2 py-1 rounded-lg border border-slate-800">
             <span class="text-[11px] text-slate-400 font-semibold hidden sm:inline mr-1">Câble :</span>
             <button onclick="selectWireColor('auto')" id="col-auto" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-400 cursor-pointer" title="Couleur automatique">AUTO</button>
@@ -436,7 +435,6 @@
             <button onclick="selectWireColor('#1e293b')" id="col-#1e293b" class="w-4 h-4 rounded-full bg-slate-800 border border-slate-400 cursor-pointer" title="Noir"></button>
         </div>
 
-        <!-- TP Presets, Oscilloscope, Memory Viewer & Zoom -->
         <div class="flex flex-wrap items-center gap-1.5">
             <select id="tpPresetSelector" onchange="loadLabPreset(this.value)" class="bg-slate-900 text-slate-100 border border-slate-700 rounded-lg px-2 py-1 text-xs font-medium focus:outline-none focus:border-sky-400 cursor-pointer max-w-[180px] sm:max-w-none">
                 <option value="">-- Circuits TP Prêts (GRS) --</option>
@@ -459,7 +457,6 @@
                 Vider
             </button>
 
-            <!-- Zoom Controls -->
             <div class="flex items-center gap-1 bg-slate-900 px-2 py-0.5 rounded-lg border border-slate-800 text-xs font-mono-tech">
                 <button onclick="adjustZoom(-0.1)" class="px-1.5 text-slate-300 hover:text-white cursor-pointer">-</button>
                 <span id="zoomLabel" class="text-sky-300">85%</span>
@@ -469,7 +466,6 @@
         </div>
     </header>
 
-    <!-- ==================== COLLAPSIBLE OSCILLOSCOPE / LOGIC ANALYZER DRAWER ==================== -->
     <div id="scopeDrawer" class="hidden bg-[#0b111e] border-b border-slate-700 px-4 py-2.5 z-40 shrink-0">
         <div class="max-w-[1740px] mx-auto flex flex-col gap-2">
             <div class="flex items-center justify-between gap-2">
@@ -483,7 +479,6 @@
         </div>
     </div>
 
-    <!-- ==================== COLLAPSIBLE RAM 8x4 & EEPROM 8x4 INSPECTOR DRAWER ==================== -->
     <div id="memDrawer" class="hidden bg-[#0b111e] border-b border-slate-700 px-4 py-2.5 z-40 shrink-0 max-h-[45vh] overflow-y-auto">
         <div class="max-w-[1740px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-[#070b14] border border-slate-800 rounded-lg p-2.5">
@@ -503,10 +498,8 @@
         </div>
     </div>
 
-    <!-- ==================== MAIN WORKBENCH WITH 1:1 HPS DIGI BOARD 2 (3910) ==================== -->
     <main id="benchViewport">
         <div id="hpsBoard" class="hps-pcb">
-            <!-- PCB Mounting Screws -->
             <div class="pcb-screw" style="top: 12px; left: 16px;"></div>
             <div class="pcb-screw" style="top: 12px; left: 590px;"></div>
             <div class="pcb-screw" style="top: 12px; left: 1140px;"></div>
@@ -518,13 +511,9 @@
             <div class="pcb-screw" style="bottom: 12px; left: 1140px;"></div>
             <div class="pcb-screw" style="bottom: 12px; right: 16px;"></div>
 
-            <!-- Interactive SVG Layer for Curved Banana Patch Cords -->
             <svg id="wiresOverlay"></svg>
-
-            <!-- Container populated procedurally with exact 1:1 HPS hardware coordinates -->
             <div id="boardModulesLayer" class="relative w-full h-full"></div>
 
-            <!-- Bottom Silkscreen Branding: hps | DIGI BOARD 2 | BY MOHAMMED NAHED | 3910 -->
             <div class="absolute bottom-3 left-6 flex items-center gap-1.5 border-2 border-white/85 rounded-full px-2.5 py-0.5">
                 <span class="silk text-xs italic tracking-tighter">hps</span>
             </div>
@@ -539,11 +528,6 @@
     </main>
 
     <script>
-        /**
-         * ============================================================================
-         * BILINGUAL WELCOME GATEWAY (FRANÇAIS / العربية)
-         * ============================================================================
-         */
         let currentWelcomeLang = 'fr';
 
         const WELCOME_TRANSLATIONS = {
@@ -551,11 +535,11 @@
                 dir: 'ltr',
                 badge: 'Filière : Gestion Réseau et Sécurité (GRS)',
                 titleHtml: 'Bienvenue aux étudiants de <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-emerald-400">Gestion Réseau et Sécurité</span>',
-                desc: 'Simulateur interactif complet de la maquette numérique <strong>HPS DIGI BOARD 2 (3910)</strong> pour vos travaux pratiques de logique et d’architecture. Compatible PC, Tablette et Téléphone.',
+                desc: 'Simulateur interactif complet de la maquette numérique <strong>HPS DIGI BOARD 2 (3910)</strong> pour vos travaux pratiques d\'électronique numérique et architecture des ordinateurs. Compatible PC, Tablette et Smartphone.',
                 createdLabel: 'Conçu et développé par',
                 deviceTag: '📱💻 PC • Tablette • Mobile',
                 supportTitle: 'Support & Contact',
-                supportSub: 'Besoin d’aide ou d’assistance technique ?',
+                supportSub: 'Besoin d\'aide ou d\'assistance technique ?',
                 copyBtn: 'Copier',
                 copiedBtn: 'Copié ✓',
                 enterBtn: 'Accéder au Laboratoire (Simulateur TP)'
@@ -610,6 +594,23 @@
             document.getElementById('wEnterBtnText').textContent = t.enterBtn;
         }
 
+        function playAudioAnnouncement() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance("لقد صُمم هذا الموقع من طرف محمد ناهض نصره الله");
+                utterance.lang = 'ar-SA';
+                utterance.rate = 0.95;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // تشغيل الصوت تلقائياً بعد تفاعل المستخدم الأول مع الواجهة
+        window.addEventListener('click', function initAudioOnce() {
+            playAudioAnnouncement();
+            window.removeEventListener('click', initAudioOnce);
+        }, { once: true });
+
         function copyTikTokHandle() {
             navigator.clipboard?.writeText('_n4ahed_');
             const btn = document.getElementById('copyTiktokBtn');
@@ -636,12 +637,6 @@
             });
         }
 
-        /**
-         * ============================================================================
-         * HPS SYSTEMTECHNIK DIGI BOARD 2 (MODEL 3910)
-         * COMPLETE 1:1 ARCHITECTURAL & MIXED-SIGNAL SIMULATION ENGINE
-         * ============================================================================
-         */
         let boardZoom = 0.82;
         let mainsOn = true;
         let selectedSocket = null;
@@ -720,6 +715,15 @@
             return el;
         }
 
+        function addNegBubble(x, y) {
+            const b = document.createElement('div');
+            b.className = 'neg-bubble';
+            b.style.left = `${x}px`;
+            b.style.top = `${y}px`;
+            boardLayer.appendChild(b);
+            return b;
+        }
+
         function addLabel(text, x, y, size = 10, extraClass = '') {
             const span = document.createElement('span');
             span.className = `silk absolute pointer-events-none ${extraClass}`;
@@ -744,7 +748,6 @@
         }
 
         function buildCompleteBoard() {
-            // A. LEFT COLUMN: 8x L/H DATA SWITCHES + PULSER + DIV10 CLOCK + POT + ZIF
             for (let i = 0; i < 8; i++) {
                 const isBottomBank = i >= 4;
                 const y = 32 + i * 58 + (isBottomBank ? 24 : 0);
@@ -764,33 +767,41 @@
                 addLabel('Q', 84, y + 1, 9);
                 addLabel('Q̄', 84, y + 15, 9);
 
-                const led = document.createElement('div');
-                led.className = 'board-led red absolute';
-                led.id = `swLed_${i}`;
-                led.style.left = '132px';
-                led.style.top = `${y + 6}px`;
-                boardLayer.appendChild(led);
+                // LED 1 (Q) - TOP LED
+                const ledQ = document.createElement('div');
+                ledQ.className = 'board-led red absolute';
+                ledQ.id = `swLed_${i}_Q`;
+                ledQ.style.left = '132px';
+                ledQ.style.top = `${y + 3}px`;
+                boardLayer.appendChild(ledQ);
+
+                // LED 2 (Q-bar) - BOTTOM LED
+                const ledQN = document.createElement('div');
+                ledQN.className = 'board-led red absolute';
+                ledQN.id = `swLed_${i}_QN`;
+                ledQN.style.left = '132px';
+                ledQN.style.top = `${y + 16}px`;
+                boardLayer.appendChild(ledQN);
 
                 addSocket(`SW${i}_Q`, 104, y + 5, 'out', 'Q', `Switch SW${i} Sortie Directe Q`);
                 addSocket(`SW${i}_QN`, 104, y + 19, 'out', 'Q̄', `Switch SW${i} Sortie Complémentaire Q̄`);
                 addSocket(`SW${i}_Q2`, 156, y + 11, 'out', 'Q', `Switch SW${i} Sortie Auxiliaire Q`);
             }
 
-            addSocket('RAIL_H1', 104, 152, 'out', 'H', 'Rail Constant H (+5V / Logique 1)');
+            addSocket('RAIL_H1', 104, 152, 'out', 'H', 'Rail Constant H (+5V)');
             addLabel('H', 88, 148, 9, 'text-red-300');
-            addSocket('RAIL_L1', 104, 274, 'out', 'L', 'Rail Constant L (0V / Masse Logique 0)');
+            addSocket('RAIL_L1', 104, 274, 'out', 'L', 'Rail Constant L (0V)');
             addLabel('L', 88, 270, 9, 'text-sky-300');
-            addSocket('RAIL_H2', 104, 388, 'out', 'H', 'Rail Constant H (+5V / Logique 1)');
+            addSocket('RAIL_H2', 104, 388, 'out', 'H', 'Rail Constant H (+5V)');
             addLabel('H', 88, 384, 9, 'text-red-300');
-            addSocket('RAIL_L2', 104, 510, 'out', 'L', 'Rail Constant L (0V / Masse Logique 0)');
+            addSocket('RAIL_L2', 104, 510, 'out', 'L', 'Rail Constant L (0V)');
             addLabel('L', 88, 506, 9, 'text-sky-300');
 
-            // Manual Debounced Red Pulser Button (Touch + Mouse support)
             const pulserBtn = document.createElement('button');
             pulserBtn.className = 'absolute w-7 h-7 rounded-full bg-red-600 hover:bg-red-500 active:scale-90 border-2 border-white shadow-lg cursor-pointer z-20';
             pulserBtn.style.left = '26px';
             pulserBtn.style.top = '546px';
-            pulserBtn.title = 'Bouton Poussoir Impulsionnel Anti-Rebond (Pulser)';
+            pulserBtn.title = 'Bouton Poussoir Anti-Rebond';
             const pressPulse = (e) => { e.preventDefault(); pulserState = 1; simulateStep(); };
             const releasePulse = () => { pulserState = 0; simulateStep(); };
             pulserBtn.addEventListener('mousedown', pressPulse);
@@ -802,12 +813,11 @@
 
             addLabel('Q', 66, 543, 9);
             addLabel('Q̄', 66, 557, 9);
-            addSocket('PULSE_Q', 84, 547, 'out', 'Q', 'Bouton Impulsionnel Sortie Q');
-            addSocket('PULSE_QN', 84, 561, 'out', 'Q̄', 'Bouton Impulsionnel Sortie Q̄');
+            addSocket('PULSE_Q', 84, 547, 'out', 'Q', 'Pulser Q');
+            addSocket('PULSE_QN', 84, 561, 'out', 'Q̄', 'Pulser Q̄');
 
-            // Clock Generator & DIV10
             addBox(26, 588, 44, 48, `<div class="silk text-[10px] text-center mt-1">G</div><div class="silk text-[9px] text-center mt-2">⎍</div>`);
-            addSocket('CLK_100K', 70, 612, 'out', '100kHz', 'Horloge Maître 100 kHz');
+            addSocket('CLK_100K', 70, 612, 'out', '100kHz', '100kHz');
             addLabel('100kHz', 80, 608, 8);
 
             addBox(122, 588, 76, 178, `
@@ -819,50 +829,50 @@
                 <div class="h-6 iec-divider"></div>
                 <div class="h-6"></div>
             `);
-            addSocket('DIV10_IN', 122, 622, 'in', '+', 'DIV10 Entrée Horloge Externe');
+            addSocket('DIV10_IN', 122, 622, 'in', '+', 'DIV10 In');
             const divFreqs = ['10kHz', '1kHz', '100Hz', '10Hz', '1Hz', '0.1Hz'];
             divFreqs.forEach((f, idx) => {
                 const fy = 622 + idx * 25;
-                addSocket(`CLK_${f}`, 198, fy, 'out', f, `DIV10 Sortie Horloge ${f}`);
+                addSocket(`CLK_${f}`, 198, fy, 'out', f, `DIV10 ${f}`);
                 addLabel(f, 208, fy - 4, 8);
             });
 
-            // Analog Potentiometer
             addBox(26, 668, 72, 96, `<div class="silk text-[10px] text-center mt-1">G−</div>`);
             const potDial = document.createElement('div');
             potDial.id = 'potKnobVisual';
             potDial.className = 'absolute w-11 h-11 rounded-full bg-slate-900 border-2 border-slate-300 shadow-lg cursor-ns-resize z-20 flex items-center justify-center';
             potDial.style.left = '40px';
             potDial.style.top = '694px';
-            potDial.title = 'Potentiomètre Analogique 0V à 5V';
+            potDial.title = 'Potentiomètre';
             potDial.innerHTML = `<div id="potNeedle" class="w-1 h-4 bg-white rounded-full -translate-y-2 origin-bottom"></div>`;
             setupPotentiometerDrag(potDial);
             boardLayer.appendChild(potDial);
 
             addLabel('0V', 31, 748, 8);
             addLabel('5V', 80, 748, 8);
-            addSocket('POT_OUT', 98, 716, 'analog', '0..5V', 'Sortie Analogique Variable (0.00V - 5.00V)');
+            addSocket('POT_OUT', 98, 716, 'analog', '0..5V', 'Potentiomètre Sortie');
 
-            // Bottom-Left 8-Pin ZIF
             addBox(44, 796, 86, 56, `<div class="w-8 h-8 mx-auto mt-2.5 bg-slate-950 border border-slate-400 rounded-sm"></div>`);
             [1, 2, 4, 8].forEach((lbl, idx) => {
                 const py = 804 + idx * 13;
-                addSocket(`ZIF_L${lbl}`, 44, py, 'bidir', `L${lbl}`, `Support CI Broche Gauche ${lbl}`);
+                addSocket(`ZIF_L${lbl}`, 44, py, 'bidir', `L${lbl}`, `ZIF Gauche ${lbl}`);
                 addLabel(`${lbl}`, 28, py - 4, 8);
-                addSocket(`ZIF_R${lbl}`, 130, py, 'bidir', `R${lbl}`, `Support CI Broche Droite ${lbl}`);
+                addSocket(`ZIF_R${lbl}`, 130, py, 'bidir', `R${lbl}`, `ZIF Droite ${lbl}`);
                 addLabel(`${lbl}`, 140, py - 4, 8);
             });
 
-            // B. LOGIC GATES MATRIX
+            // Logic Gates & Bar outputs
             for (let g = 0; g < 7; g++) {
                 const gy = 48 + g * 106;
                 const numInputs = g === 0 ? 4 : (g <= 2 ? 3 : 2);
                 const gh = numInputs === 4 ? 72 : (numInputs === 3 ? 60 : 48);
                 addBox(274, gy, 44, gh, `<div class="silk text-xs text-center mt-2">&amp;</div>`);
                 for (let inp = 0; inp < numInputs; inp++) {
-                    addSocket(`AND${g}_I${inp}`, 274, gy + 12 + inp * 16, 'in', `I${inp}`, `Porte ET (&) #${g + 1} Entrée ${inp + 1}`);
+                    addSocket(`AND${g}_I${inp}`, 274, gy + 12 + inp * 16, 'in', `I${inp}`, `AND ${g+1}`);
                 }
-                addSocket(`AND${g}_Y`, 318, gy + gh / 2, 'out', 'Y', `Porte ET (&) #${g + 1} Sortie`);
+                addSocket(`AND${g}_Y`, 318, gy + 14, 'out', 'Y', `AND ${g+1} Y`);
+                addNegBubble(318, gy + gh - 14);
+                addSocket(`AND${g}_YN`, 328, gy + gh - 14, 'out', 'Ȳ', `NAND ${g+1}`);
             }
 
             for (let g = 0; g < 7; g++) {
@@ -874,30 +884,32 @@
                 const prefix = isBottomAnd ? 'AND7' : `OR${g}`;
                 addBox(378, gy, 44, gh, `<div class="silk text-xs text-center mt-2">${sym}</div>`);
                 for (let inp = 0; inp < numInputs; inp++) {
-                    addSocket(`${prefix}_I${inp}`, 378, gy + 12 + inp * 16, 'in', `I${inp}`, `Porte ${isBottomAnd ? 'ET' : 'OU'} #${g + 1} Entrée ${inp + 1}`);
+                    addSocket(`${prefix}_I${inp}`, 378, gy + 12 + inp * 16, 'in', `I${inp}`, `${prefix}`);
                 }
-                addSocket(`${prefix}_Y`, 422, gy + gh / 2, 'out', 'Y', `Porte ${isBottomAnd ? 'ET' : 'OU'} #${g + 1} Sortie`);
+                addSocket(`${prefix}_Y`, 422, gy + 14, 'out', 'Y', `${prefix} Y`);
+                addNegBubble(422, gy + gh - 14);
+                addSocket(`${prefix}_YN`, 432, gy + gh - 14, 'out', 'Ȳ', `${prefix} Inversé`);
             }
 
             for (let c = 0; c < 3; c++) {
                 const cy = 48 + c * 106;
                 addBox(480, cy, 34, 54, `<div class="silk text-[10px] text-center mt-2">&amp;</div>`);
                 addBox(514, cy, 34, 54, `<div class="silk text-[10px] text-center mt-2">&ge;1</div>`);
-                addSocket(`CMB${c}_A`, 480, cy + 14, 'in', 'A', `Bloc Combiné #${c + 1} Entrée A`);
-                addSocket(`CMB${c}_B`, 480, cy + 40, 'in', 'B', `Bloc Combiné #${c + 1} Entrée B`);
-                addSocket(`CMB${c}_AND`, 548, cy + 14, 'out', 'AND', `Bloc Combiné #${c + 1} Sortie ET`);
-                addSocket(`CMB${c}_OR`, 548, cy + 40, 'out', 'OR', `Bloc Combiné #${c + 1} Sortie OU`);
+                addSocket(`CMB${c}_A`, 480, cy + 14, 'in', 'A', `CMB ${c+1} A`);
+                addSocket(`CMB${c}_B`, 480, cy + 40, 'in', 'B', `CMB ${c+1} B`);
+                addSocket(`CMB${c}_AND`, 548, cy + 14, 'out', 'AND', `CMB ${c+1} AND`);
+                addSocket(`CMB${c}_OR`, 548, cy + 40, 'out', 'OR', `CMB ${c+1} OR`);
             }
 
             addBox(486, 372, 46, 52, `<div class="silk text-xs text-center mt-2">=1</div>`);
-            addSocket('XOR_A', 486, 386, 'in', 'A', 'Porte OU-Exclusif (XOR =1) Entrée A');
-            addSocket('XOR_B', 486, 412, 'in', 'B', 'Porte OU-Exclusif (XOR =1) Entrée B');
-            addSocket('XOR_Y', 532, 398, 'out', 'Y', 'Porte OU-Exclusif (XOR =1) Sortie');
+            addSocket('XOR_A', 486, 386, 'in', 'A', 'XOR A');
+            addSocket('XOR_B', 486, 412, 'in', 'B', 'XOR B');
+            addSocket('XOR_Y', 532, 398, 'out', 'Y', 'XOR Y');
 
             addBox(486, 462, 46, 52, `<div class="silk text-xs text-center mt-2">=</div>`);
-            addSocket('XNOR_A', 486, 476, 'in', 'A', 'Porte Coïncidence (XNOR =) Entrée A');
-            addSocket('XNOR_B', 486, 502, 'in', 'B', 'Porte Coïncidence (XNOR =) Entrée B');
-            addSocket('XNOR_Y', 532, 488, 'out', 'Y', 'Porte Coïncidence (XNOR =) Sortie');
+            addSocket('XNOR_A', 486, 476, 'in', 'A', 'XNOR A');
+            addSocket('XNOR_B', 486, 502, 'in', 'B', 'XNOR B');
+            addSocket('XNOR_Y', 532, 488, 'out', 'Y', 'XNOR Y');
 
             addBox(476, 558, 66, 74, `
                 <div class="silk text-[9px] text-center mt-1">COMP</div>
@@ -905,17 +917,17 @@
                 <div class="silk text-[8px] text-right px-1.5 mt-1.5">P=Q</div>
                 <div class="silk text-[8px] flex justify-between px-1.5 mt-1.5"><span>Q</span><span>P&lt;Q</span></div>
             `);
-            addSocket('COMP1_P', 476, 582, 'in', 'P', 'Comparateur 1-Bit Entrée P');
-            addSocket('COMP1_Q', 476, 616, 'in', 'Q', 'Comparateur 1-Bit Entrée Q');
-            addSocket('COMP1_GT', 542, 582, 'out', 'P>Q', 'Comparateur 1-Bit Sortie P > Q');
-            addSocket('COMP1_EQ', 542, 598, 'out', 'P=Q', 'Comparateur 1-Bit Sortie P = Q');
-            addSocket('COMP1_LT', 542, 616, 'out', 'P<Q', 'Comparateur 1-Bit Sortie P < Q');
+            addSocket('COMP1_P', 476, 582, 'in', 'P', 'COMP1 P');
+            addSocket('COMP1_Q', 476, 616, 'in', 'Q', 'COMP1 Q');
+            addSocket('COMP1_GT', 542, 582, 'out', 'P>Q', 'COMP1 P>Q');
+            addSocket('COMP1_EQ', 542, 598, 'out', 'P=Q', 'COMP1 P=Q');
+            addSocket('COMP1_LT', 542, 616, 'out', 'P<Q', 'COMP1 P<Q');
 
             addBox(486, 706, 46, 56, `<div class="silk text-[10px] text-center mt-1">1 ⎍</div>`);
-            addSocket('MONO_TRG', 486, 722, 'in', 'TRG', 'Monostable Déclenchement Front Montant');
-            addSocket('MONO_R', 486, 748, 'in', 'R', 'Monostable Reset');
-            addSocket('MONO_Q', 532, 722, 'out', 'Q', 'Monostable Sortie Q');
-            addSocket('MONO_QN', 532, 748, 'out', 'Q̄', 'Monostable Sortie Q̄');
+            addSocket('MONO_TRG', 486, 722, 'in', 'TRG', 'MONO TRG');
+            addSocket('MONO_R', 486, 748, 'in', 'R', 'MONO R');
+            addSocket('MONO_Q', 532, 722, 'out', 'Q', 'MONO Q');
+            addSocket('MONO_QN', 532, 748, 'out', 'Q̄', 'MONO Q̄');
 
             const monoSelBtn = document.createElement('button');
             monoSelBtn.id = 'monoTimeBtn';
@@ -928,26 +940,25 @@
 
             for (let n = 0; n < 6; n++) {
                 const ny = 188 + n * 48;
-                addSocket(`NOT${n}_A`, 602, ny, 'in', 'A', `Inverseur (NOT) #${n + 1} Entrée`);
+                addSocket(`NOT${n}_A`, 602, ny, 'in', 'A', `NOT ${n+1}`);
                 addLabel('1▷o', 612, ny - 4, 8);
-                addSocket(`NOT${n}_Y`, 640, ny, 'out', 'Y', `Inverseur (NOT) #${n + 1} Sortie`);
+                addSocket(`NOT${n}_Y`, 640, ny, 'out', 'Y', `NOT ${n+1} Y`);
             }
 
             for (let oc = 0; oc < 2; oc++) {
                 const oy = 524 + oc * 54;
                 addBox(602, oy, 38, 36, `<div class="silk text-[10px] text-center mt-2">▷♢</div>`);
-                addSocket(`DRV${oc}_A`, 602, oy + 18, 'in', 'A', `Driver Sortie Ouverte #${oc + 1} Entrée`);
-                addSocket(`DRV${oc}_Y`, 640, oy + 18, 'out', 'Y', `Driver Sortie Ouverte #${oc + 1} Sortie`);
+                addSocket(`DRV${oc}_A`, 602, oy + 18, 'in', 'A', `DRV ${oc+1}`);
+                addSocket(`DRV${oc}_Y`, 640, oy + 18, 'out', 'Y', `DRV ${oc+1} Y`);
             }
 
             for (let st = 0; st < 2; st++) {
                 const sy = 682 + st * 56;
                 addBox(602, sy, 38, 38, `<div class="silk text-[10px] text-center mt-2">⎍</div>`);
-                addSocket(`SCH${st}_A`, 602, sy + 19, 'in', 'A', `Trigger de Schmitt #${st + 1} Entrée (Seuil 1.7V/3.3V)`);
-                addSocket(`SCH${st}_Y`, 640, sy + 19, 'out', 'Y', `Trigger de Schmitt #${st + 1} Sortie`);
+                addSocket(`SCH${st}_A`, 602, sy + 19, 'in', 'A', `SCH ${st+1}`);
+                addSocket(`SCH${st}_Y`, 640, sy + 19, 'out', 'Y', `SCH ${st+1} Y`);
             }
 
-            // C. FLIP-FLOPS
             for (let j = 0; j < 4; j++) {
                 const jx = 696 + j * 112;
                 addBox(jx, 48, 56, 108, `
@@ -957,14 +968,14 @@
                     <div class="silk text-[8px] px-1 pt-2">1K</div>
                     <div class="silk text-[8px] px-1 pt-2">R</div>
                 `);
-                addSocket(`JK${j}_S`, jx, 56, 'in', 'S', `Bascule JK #${j + 1} Preset (S)`);
-                addSocket(`JK${j}_J`, jx, 78, 'in', '1J', `Bascule JK #${j + 1} Entrée J`);
-                addSocket(`JK${j}_C`, jx, 102, 'in', 'C1', `Bascule JK #${j + 1} Horloge (Front Montant)`);
-                addSocket(`JK${j}_K`, jx, 126, 'in', '1K', `Bascule JK #${j + 1} Entrée K`);
-                addSocket(`JK${j}_R`, jx, 148, 'in', 'R', `Bascule JK #${j + 1} Reset (R)`);
+                addSocket(`JK${j}_S`, jx, 56, 'in', 'S', `JK ${j+1} S`);
+                addSocket(`JK${j}_J`, jx, 78, 'in', '1J', `JK ${j+1} J`);
+                addSocket(`JK${j}_C`, jx, 102, 'in', 'C1', `JK ${j+1} C`);
+                addSocket(`JK${j}_K`, jx, 126, 'in', '1K', `JK ${j+1} K`);
+                addSocket(`JK${j}_R`, jx, 148, 'in', 'R', `JK ${j+1} R`);
 
-                addSocket(`JK${j}_Q`, jx + 56, 78, 'out', 'Q', `Bascule JK #${j + 1} Sortie Q`);
-                addSocket(`JK${j}_QN`, jx + 56, 126, 'out', 'Q̄', `Bascule JK #${j + 1} Sortie Q̄`);
+                addSocket(`JK${j}_Q`, jx + 56, 78, 'out', 'Q', `JK ${j+1} Q`);
+                addSocket(`JK${j}_QN`, jx + 56, 126, 'out', 'Q̄', `JK ${j+1} Q̄`);
             }
 
             for (let d = 0; d < 4; d++) {
@@ -973,13 +984,12 @@
                     <div class="silk text-[8px] px-1 pt-1">1D</div>
                     <div class="silk text-[8px] px-1 pt-2.5">▷C1</div>
                 `);
-                addSocket(`DFF${d}_D`, dx, 188, 'in', '1D', `Bascule D #${d + 1} Donnée D`);
-                addSocket(`DFF${d}_C`, dx, 212, 'in', 'C1', `Bascule D #${d + 1} Horloge (Front Montant)`);
-                addSocket(`DFF${d}_Q`, dx + 56, 188, 'out', 'Q', `Bascule D #${d + 1} Sortie Q`);
-                addSocket(`DFF${d}_QN`, dx + 56, 212, 'out', 'Q̄', `Bascule D #${d + 1} Sortie Q̄`);
+                addSocket(`DFF${d}_D`, dx, 188, 'in', '1D', `DFF ${d+1} D`);
+                addSocket(`DFF${d}_C`, dx, 212, 'in', 'C1', `DFF ${d+1} C`);
+                addSocket(`DFF${d}_Q`, dx + 56, 188, 'out', 'Q', `DFF ${d+1} Q`);
+                addSocket(`DFF${d}_QN`, dx + 56, 212, 'out', 'Q̄', `DFF ${d+1} Q̄`);
             }
 
-            // D. ADDERS, COMP, MUX, DX, ADC, DAC
             for (let a = 0; a < 2; a++) {
                 const ax = 726 + a * 124;
                 addBox(ax, 250, 58, 224, `
@@ -989,12 +999,12 @@
                     <div class="silk text-[8px] flex justify-between px-1 mt-8"><span>CI</span><span>CO</span></div>
                 `);
                 for (let b = 0; b < 4; b++) {
-                    addSocket(`ADD${a}_P${b}`, ax, 272 + b * 22, 'in', `P${b}`, `Additionneur #${a + 1} Opérande P${b}`);
-                    addSocket(`ADD${a}_Q${b}`, ax, 368 + b * 22, 'in', `Q${b}`, `Additionneur #${a + 1} Opérande Q${b}`);
-                    addSocket(`ADD${a}_S${b}`, ax + 58, 314 + b * 24, 'out', `Σ${b}`, `Additionneur #${a + 1} Somme Σ${b}`);
+                    addSocket(`ADD${a}_P${b}`, ax, 272 + b * 22, 'in', `P${b}`, `ADD ${a+1} P${b}`);
+                    addSocket(`ADD${a}_Q${b}`, ax, 368 + b * 22, 'in', `Q${b}`, `ADD ${a+1} Q${b}`);
+                    addSocket(`ADD${a}_S${b}`, ax + 58, 314 + b * 24, 'out', `Σ${b}`, `ADD ${a+1} Σ${b}`);
                 }
-                addSocket(`ADD${a}_CI`, ax + 14, 474, 'in', 'CI', `Additionneur #${a + 1} Retenue Entrante CI`);
-                addSocket(`ADD${a}_CO`, ax + 44, 474, 'out', 'CO', `Additionneur #${a + 1} Retenue Sortante CO`);
+                addSocket(`ADD${a}_CI`, ax + 14, 474, 'in', 'CI', `ADD ${a+1} CI`);
+                addSocket(`ADD${a}_CO`, ax + 44, 474, 'out', 'CO', `ADD ${a+1} CO`);
             }
 
             addBox(726, 514, 58, 286, `
@@ -1003,85 +1013,86 @@
                 <div class="silk text-[9px] text-center mt-24">Q</div>
             `);
             for (let b = 0; b < 4; b++) {
-                addSocket(`CMP4_P${b}`, 726, 534 + b * 22, 'in', `P${b}`, `Comparateur 4-Bits Mot P bit ${b}`);
-                addSocket(`CMP4_Q${b}`, 726, 710 + b * 22, 'in', `Q${b}`, `Comparateur 4-Bits Mot Q bit ${b}`);
+                addSocket(`CMP4_P${b}`, 726, 534 + b * 22, 'in', `P${b}`, `CMP4 P${b}`);
+                addSocket(`CMP4_Q${b}`, 726, 710 + b * 22, 'in', `Q${b}`, `CMP4 Q${b}`);
             }
-            addSocket('CMP4_IGT', 726, 636, 'in', '>', 'Comparateur Cascade P>Q in');
-            addSocket('CMP4_IEQ', 726, 658, 'in', '=', 'Comparateur Cascade P=Q in');
-            addSocket('CMP4_ILT', 726, 680, 'in', '<', 'Comparateur Cascade P<Q in');
+            addSocket('CMP4_IGT', 726, 636, 'in', '>', 'CMP4 P>Q in');
+            addSocket('CMP4_IEQ', 726, 658, 'in', '=', 'CMP4 P=Q in');
+            addSocket('CMP4_ILT', 726, 680, 'in', '<', 'CMP4 P<Q in');
 
-            addSocket('CMP4_GT', 784, 636, 'out', 'P>Q', 'Comparateur 4-Bits Sortie P > Q');
-            addSocket('CMP4_EQ', 784, 658, 'out', 'P=Q', 'Comparateur 4-Bits Sortie P = Q');
-            addSocket('CMP4_LT', 784, 680, 'out', 'P<Q', 'Comparateur 4-Bits Sortie P < Q');
+            addSocket('CMP4_GT', 784, 636, 'out', 'P>Q', 'CMP4 P>Q');
+            addSocket('CMP4_EQ', 784, 658, 'out', 'P=Q', 'CMP4 P=Q');
+            addSocket('CMP4_LT', 784, 680, 'out', 'P<Q', 'CMP4 P<Q');
 
             addBox(864, 514, 58, 174, `
                 <div class="silk text-[10px] text-center mt-1">MUX</div>
                 <div class="silk text-[8px] px-1 mt-1">EN̄</div>
                 <div class="silk text-[8px] px-1 mt-2">G 0/3</div>
             `);
-            addSocket('MUX_EN', 864, 534, 'in', 'EN̄', 'MUX Enable (Actif Bas)');
-            addSocket('MUX_S0', 864, 558, 'in', 'S0', 'MUX Adresse Sélection S0');
-            addSocket('MUX_S1', 864, 578, 'in', 'S1', 'MUX Adresse Sélection S1');
+            addSocket('MUX_EN', 864, 534, 'in', 'EN̄', 'MUX EN̄');
+            addSocket('MUX_S0', 864, 558, 'in', 'S0', 'MUX S0');
+            addSocket('MUX_S1', 864, 578, 'in', 'S1', 'MUX S1');
             for (let i = 0; i < 4; i++) {
-                addSocket(`MUX_I${i}`, 864, 606 + i * 22, 'in', `I${i}`, `MUX Entrée Donnée ${i}`);
+                addSocket(`MUX_I${i}`, 864, 606 + i * 22, 'in', `I${i}`, `MUX I${i}`);
             }
-            addSocket('MUX_Y', 922, 582, 'out', 'Y', 'MUX Sortie Y');
-            addSocket('MUX_YN', 922, 626, 'out', 'Ȳ', 'MUX Sortie Complémentaire Ȳ');
+            addSocket('MUX_Y', 922, 582, 'out', 'Y', 'MUX Y');
+            addSocket('MUX_YN', 922, 626, 'out', 'Ȳ', 'MUX Ȳ');
 
             addBox(986, 514, 58, 128, `
                 <div class="silk text-[10px] text-center mt-1">DX</div>
-                <div class="silk text-[8px] px-1 mt-2">G 0/3</div>
+                <div class="silk text-[8px] px-1.5 mt-2">G 0/3</div>
             `);
-            addSocket('DX_S0', 986, 544, 'in', 'S0', 'Démultiplexeur Adresse S0');
-            addSocket('DX_S1', 986, 566, 'in', 'S1', 'Démultiplexeur Adresse S1');
-            addSocket('DX_EN', 986, 606, 'in', 'EN', 'Démultiplexeur Validation / Donnée');
-            for (let i = 0; i < 4; i++) {
-                addSocket(`DX_O${i}`, 1044, 540 + i * 26, 'out', `O${i}`, `Démultiplexeur Sortie Décodée ${i}`);
-            }
+            addSocket('DX_EN', 986, 534, 'in', 'EN', 'DX EN');
+            addSocket('DX_S0', 986, 568, 'in', 'S0', 'DX S0');
+            addSocket('DX_S1', 986, 610, 'in', 'S1', 'DX S1');
+            
+            addSocket('DX_O0', 1044, 534, 'out', 'O0', 'DX O0');
+            addSocket('DX_O1', 1044, 568, 'out', 'O1', 'DX O1');
+            addSocket('DX_O2', 1044, 602, 'out', 'O2', 'DX O2');
+            addSocket('DX_O3', 1044, 636, 'out', 'O3', 'DX O3');
 
             addBox(848, 712, 54, 118, `<div class="silk text-[10px] text-center mt-2">∩/#</div><div class="silk text-[8px] text-center mt-1">ADC 4b</div>`);
-            addSocket('ADC_SOC', 848, 728, 'in', 'SOC', 'ADC Start of Conversion');
-            addSocket('ADC_IN', 848, 796, 'analog', '∩', 'ADC Entrée Analogique (0V - 5V)');
+            addSocket('ADC_SOC', 848, 728, 'in', 'SOC', 'ADC SOC');
+            addSocket('ADC_IN', 848, 796, 'analog', '∩', 'ADC IN');
             for (let b = 0; b < 4; b++) {
-                addSocket(`ADC_D${3 - b}`, 902, 728 + b * 22, 'out', `D${3 - b}`, `ADC Sortie Numérique Bit D${3 - b}`);
+                addSocket(`ADC_D${3 - b}`, 902, 728 + b * 22, 'out', `D${3 - b}`, `ADC D${3 - b}`);
             }
-            addSocket('ADC_EOC', 902, 816, 'out', 'EOC', 'ADC End of Conversion');
+            addSocket('ADC_EOC', 902, 816, 'out', 'EOC', 'ADC EOC');
 
             addBox(968, 712, 54, 118, `<div class="silk text-[10px] text-center mt-2">#/∩</div><div class="silk text-[8px] text-center mt-1">DAC 4b</div>`);
             for (let b = 0; b < 4; b++) {
-                addSocket(`DAC_D${3 - b}`, 968, 728 + b * 22, 'in', `D${3 - b}`, `DAC Entrée Numérique Bit D${3 - b}`);
+                addSocket(`DAC_D${3 - b}`, 968, 728 + b * 22, 'in', `D${3 - b}`, `DAC D${3 - b}`);
             }
-            addSocket('DAC_OUT', 1022, 796, 'analog', '∩', 'DAC Sortie Analogique (0V - 5V)');
+            addSocket('DAC_OUT', 1022, 796, 'analog', '∩', 'DAC OUT');
 
-            // E. CTRDIV16, EN2, SRG4
             addBox(992, 250, 74, 224, `
                 <div class="silk text-[9px] text-center mt-1">CTRDIV16</div>
                 <div class="silk text-[8px] px-1 mt-1">CT=0</div>
                 <div class="silk text-[8px] px-1 mt-3">G1 / C3 / G2</div>
                 <div class="silk text-[8px] px-1 mt-12">3D (Load)</div>
             `);
-            addSocket('CTR_RST', 992, 274, 'in', 'CT=0', 'Compteur CTRDIV16 Reset Synchrone (CT=0)');
-            addSocket('CTR_DIR', 992, 300, 'in', 'G1', 'Compteur Direction (0 = Up +, 1 = Down -)');
-            addSocket('CTR_EN', 992, 326, 'in', 'G2', 'Compteur Validation Comptage (G2)');
-            addSocket('CTR_CLK', 992, 352, 'in', 'C3', 'Compteur Horloge (Front Montant C3)');
-            addSocket('CTR_TC15', 1066, 300, 'out', 'CT=15', 'Compteur Fin de Comptage (CT=15)');
-            addSocket('CTR_TC0', 1066, 336, 'out', 'CT=0', 'Compteur Passage par Zéro (CT=0)');
+            addSocket('CTR_RST', 992, 274, 'in', 'CT=0', 'CTR RST');
+            addSocket('CTR_DIR', 992, 300, 'in', 'G1', 'CTR DIR');
+            addSocket('CTR_EN', 992, 326, 'in', 'G2', 'CTR EN');
+            addSocket('CTR_CLK', 992, 352, 'in', 'C3', 'CTR CLK');
+            addSocket('CTR_TC15', 1066, 300, 'out', 'CT=15', 'CTR TC15');
+            addSocket('CTR_TC0', 1066, 336, 'out', 'CT=0', 'CTR TC0');
 
             for (let b = 0; b < 4; b++) {
                 const by = 388 + b * 22;
-                addSocket(`CTR_D${b}`, 992, by, 'in', `D${b}`, `Compteur Préchargement Parallèle D${b}`);
-                addSocket(`CTR_Q${b}`, 1066, by, 'out', `Q${b}`, `Compteur Sortie Binaire Q${b}`);
+                addSocket(`CTR_D${b}`, 992, by, 'in', `D${b}`, `CTR D${b}`);
+                addSocket(`CTR_Q${b}`, 1066, by, 'out', `Q${b}`, `CTR Q${b}`);
             }
 
             addBox(1126, 408, 60, 122, `
                 <div class="silk text-[9px] text-center mt-1">EN2</div>
                 <div class="silk text-xs text-center mt-2">▷</div>
             `);
-            addSocket('BUF_EN', 1126, 424, 'in', 'EN2', 'Buffer Tri-State Validation EN2 (1=Actif, 0=Hi-Z)');
+            addSocket('BUF_EN', 1126, 424, 'in', 'EN2', 'BUF EN2');
             for (let b = 0; b < 4; b++) {
                 const by = 454 + b * 20;
-                addSocket(`BUF_A${b}`, 1126, by, 'in', `A${b}`, `Buffer Bus Entrée A${b}`);
-                addSocket(`BUF_Y${b}`, 1186, by, 'out', `Y${b}`, `Buffer Bus Sortie Tri-State Y${b}`);
+                addSocket(`BUF_A${b}`, 1126, by, 'in', `A${b}`, `BUF A${b}`);
+                addSocket(`BUF_Y${b}`, 1186, by, 'out', `Y${b}`, `BUF Y${b}`);
             }
 
             addBox(1126, 566, 64, 264, `
@@ -1090,20 +1101,19 @@
                 <div class="silk text-[8px] px-1 mt-4">C4 / R</div>
                 <div class="silk text-[8px] px-1 mt-8">1,4D..3,4D</div>
             `);
-            addSocket('SRG_M0', 1126, 594, 'in', 'M0', 'Registre SRG4 Mode M0 (00:Hold, 01:Right, 10:Left, 11:Load)');
-            addSocket('SRG_M1', 1126, 616, 'in', 'M1', 'Registre SRG4 Mode M1');
-            addSocket('SRG_CLK', 1126, 648, 'in', 'C4', 'Registre SRG4 Horloge C4');
-            addSocket('SRG_RST', 1126, 672, 'in', 'R', 'Registre SRG4 Reset Asynchrone R');
-            addSocket('SRG_SR', 1190, 624, 'in', 'SER_R', 'Registre SRG4 Entrée Série Décalage Droite');
-            addSocket('SRG_SL', 1190, 654, 'in', 'SER_L', 'Registre SRG4 Entrée Série Décalage Gauche');
+            addSocket('SRG_M0', 1126, 594, 'in', 'M0', 'SRG M0');
+            addSocket('SRG_M1', 1126, 616, 'in', 'M1', 'SRG M1');
+            addSocket('SRG_CLK', 1126, 648, 'in', 'C4', 'SRG CLK');
+            addSocket('SRG_RST', 1126, 672, 'in', 'R', 'SRG RST');
+            addSocket('SRG_SR', 1190, 624, 'in', 'SER_R', 'SRG SER_R');
+            addSocket('SRG_SL', 1190, 654, 'in', 'SER_L', 'SRG SER_L');
 
             for (let b = 0; b < 4; b++) {
                 const by = 716 + b * 28;
-                addSocket(`SRG_D${b}`, 1126, by, 'in', `D${b}`, `Registre SRG4 Entrée Parallèle D${b}`);
-                addSocket(`SRG_Q${b}`, 1190, by, 'out', `Q${b}`, `Registre SRG4 Sortie Q${b}`);
+                addSocket(`SRG_D${b}`, 1126, by, 'in', `D${b}`, `SRG D${b}`);
+                addSocket(`SRG_Q${b}`, 1190, by, 'out', `Q${b}`, `SRG Q${b}`);
             }
 
-            // F. RAM 8x4, EEPROM 8x4, ALU [T]
             addBox(1126, 48, 72, 286, `
                 <div class="silk text-[9px] text-center mt-1">RAM 8x4</div>
                 <div class="silk text-[8px] px-1 mt-3">A 0/7</div>
@@ -1111,15 +1121,15 @@
                 <div class="silk text-[8px] text-center mt-10">D0..D3</div>
             `);
             for (let a = 0; a < 3; a++) {
-                addSocket(`RAM_A${a}`, 1126, 76 + a * 22, 'in', `A${a}`, `RAM 8×4 Adresse Bit A${a}`);
+                addSocket(`RAM_A${a}`, 1126, 76 + a * 22, 'in', `A${a}`, `RAM A${a}`);
             }
-            addSocket('RAM_WE', 1126, 154, 'in', 'WE', 'RAM 8×4 Write Enable (1 = Écrire)');
-            addSocket('RAM_OE', 1126, 176, 'in', 'OE', 'RAM 8×4 Output Enable (1 = Lire vers D0..D3)');
-            addSocket('RAM_CS', 1126, 198, 'in', 'CS', 'RAM 8×4 Chip Select (1 = Sélectionné)');
+            addSocket('RAM_WE', 1126, 154, 'in', 'WE', 'RAM WE');
+            addSocket('RAM_OE', 1126, 176, 'in', 'OE', 'RAM OE');
+            addSocket('RAM_CS', 1126, 198, 'in', 'CS', 'RAM CS');
             for (let d = 0; d < 4; d++) {
                 const dy = 236 + d * 24;
-                addSocket(`RAM_DI${d}`, 1126, dy, 'in', `DI${d}`, `RAM 8×4 Donnée Entrée D${d}`);
-                addSocket(`RAM_DO${d}`, 1198, dy, 'out', `DO${d}`, `RAM 8×4 Donnée Sortie D${d}`);
+                addSocket(`RAM_DI${d}`, 1126, dy, 'in', `DI${d}`, `RAM DI${d}`);
+                addSocket(`RAM_DO${d}`, 1198, dy, 'out', `DO${d}`, `RAM DO${d}`);
             }
 
             addBox(1272, 48, 72, 286, `
@@ -1129,15 +1139,15 @@
                 <div class="silk text-[8px] text-center mt-10">D0..D3</div>
             `);
             for (let a = 0; a < 3; a++) {
-                addSocket(`EEP_A${a}`, 1272, 76 + a * 22, 'in', `A${a}`, `EEPROM 8×4 Adresse Bit A${a}`);
+                addSocket(`EEP_A${a}`, 1272, 76 + a * 22, 'in', `A${a}`, `EEPROM A${a}`);
             }
-            addSocket('EEP_WE', 1272, 154, 'in', 'WE', 'EEPROM 8×4 Write Enable (Non-Volatil)');
-            addSocket('EEP_OE', 1272, 176, 'in', 'OE', 'EEPROM 8×4 Output Enable');
-            addSocket('EEP_CS', 1272, 198, 'in', 'CS', 'EEPROM 8×4 Chip Select');
+            addSocket('EEP_WE', 1272, 154, 'in', 'WE', 'EEPROM WE');
+            addSocket('EEP_OE', 1272, 176, 'in', 'OE', 'EEPROM OE');
+            addSocket('EEP_CS', 1272, 198, 'in', 'CS', 'EEPROM CS');
             for (let d = 0; d < 4; d++) {
                 const dy = 236 + d * 24;
-                addSocket(`EEP_DI${d}`, 1272, dy, 'in', `DI${d}`, `EEPROM 8×4 Donnée Entrée D${d}`);
-                addSocket(`EEP_DO${d}`, 1344, dy, 'out', `DO${d}`, `EEPROM 8×4 Donnée Sortie D${d}`);
+                addSocket(`EEP_DI${d}`, 1272, dy, 'in', `DI${d}`, `EEPROM DI${d}`);
+                addSocket(`EEP_DO${d}`, 1344, dy, 'out', `DO${d}`, `EEPROM DO${d}`);
             }
 
             addBox(1272, 468, 72, 362, `
@@ -1148,29 +1158,28 @@
             `);
             for (let s = 0; s < 5; s++) {
                 const lbl = s < 4 ? `S${s}` : 'M';
-                addSocket(`ALU_${lbl}`, 1272, 492 + s * 22, 'in', lbl, `ALU Sélection Fonction ${lbl}`);
+                addSocket(`ALU_${lbl}`, 1272, 492 + s * 22, 'in', lbl, `ALU ${lbl}`);
             }
-            addSocket('ALU_CI', 1288, 616, 'in', 'CI', 'ALU Carry-In (CI)');
-            addSocket('ALU_CP', 1344, 514, 'out', 'CP', 'ALU Carry Propagate');
-            addSocket('ALU_CG', 1344, 536, 'out', 'CG', 'ALU Carry Generate');
-            addSocket('ALU_CO', 1344, 558, 'out', 'CO', 'ALU Carry-Out (CO)');
-            addSocket('ALU_EQ', 1344, 588, 'out', 'P=Q', 'ALU Comparaison P = Q');
+            addSocket('ALU_CI', 1288, 616, 'in', 'CI', 'ALU CI');
+            addSocket('ALU_CP', 1344, 514, 'out', 'CP', 'ALU CP');
+            addSocket('ALU_CG', 1344, 536, 'out', 'CG', 'ALU CG');
+            addSocket('ALU_CO', 1344, 558, 'out', 'CO', 'ALU CO');
+            addSocket('ALU_EQ', 1344, 588, 'out', 'P=Q', 'ALU P=Q');
 
             for (let b = 0; b < 4; b++) {
                 const py = 638 + b * 48;
-                addSocket(`ALU_P${b}`, 1272, py, 'in', `P${b}`, `ALU Opérande P${b}`);
-                addSocket(`ALU_Q${b}`, 1272, py + 22, 'in', `Q${b}`, `ALU Opérande Q${b}`);
-                addSocket(`ALU_F${b}`, 1344, py + 11, 'out', `F${b}`, `ALU Résultat Sortie F${b}`);
+                addSocket(`ALU_P${b}`, 1272, py, 'in', `P${b}`, `ALU P${b}`);
+                addSocket(`ALU_Q${b}`, 1272, py + 22, 'in', `Q${b}`, `ALU Q${b}`);
+                addSocket(`ALU_F${b}`, 1344, py + 11, 'out', `F${b}`, `ALU F${b}`);
             }
 
-            // G. LEDs, MAINS, 7SEG, DB25
             const ledColors = ['red', 'yellow', 'green'];
             const ledPrefixes = ['LEDR', 'LEDY', 'LEDG'];
             for (let grp = 0; grp < 3; grp++) {
                 for (let idx = 0; idx < 4; idx++) {
                     const ly = 54 + (grp * 4 + idx) * 23;
                     const pinName = `${ledPrefixes[grp]}${idx + 1}`;
-                    addSocket(pinName, 1418, ly, 'in', `${idx + 1}`, `LED ${ledColors[grp].toUpperCase()} #${idx + 1}`);
+                    addSocket(pinName, 1418, ly, 'in', `${idx + 1}`, `LED ${ledColors[grp]} ${idx+1}`);
                     addLabel(`${idx + 1}`, 1428, ly - 4, 8);
 
                     const led = document.createElement('div');
@@ -1191,7 +1200,7 @@
             mainsBtn.className = 'absolute w-10 h-16 rounded bg-slate-950 border-2 border-slate-300 flex flex-col overflow-hidden cursor-pointer shadow-xl z-20';
             mainsBtn.style.left = '1532px';
             mainsBtn.style.top = '106px';
-            mainsBtn.title = 'Interrupteur Général MAINS (ON/OFF)';
+            mainsBtn.title = 'MAINS';
             mainsBtn.innerHTML = `
                 <div id="mainsTop" class="flex-1 bg-emerald-500 text-slate-950 font-mono-tech font-black text-xs flex items-center justify-center shadow-inner">I</div>
                 <div id="mainsBot" class="flex-1 bg-slate-900 text-slate-500 font-mono-tech font-black text-xs flex items-center justify-center">O</div>
@@ -1226,17 +1235,17 @@
 
             [1, 2, 4, 8].forEach((weight, idx) => {
                 const yUp = 472 + idx * 18;
-                addSocket(`SEG_H${weight}`, 1454, yUp, 'in', `H${weight}`, `Afficheur Gauche (MSD) Entrée BCD Poids ${weight}`);
+                addSocket(`SEG_H${weight}`, 1454, yUp, 'in', `H${weight}`, `7SEG H${weight}`);
                 addLabel(`${weight}`, 1464, yUp - 4, 8);
 
                 const yLo = 556 + idx * 18;
-                addSocket(`SEG_L${weight}`, 1454, yLo, 'in', `L${weight}`, `Afficheur Droit (LSD) Entrée BCD Poids ${weight}`);
+                addSocket(`SEG_L${weight}`, 1454, yLo, 'in', `L${weight}`, `7SEG L${weight}`);
                 addLabel(`${weight}`, 1464, yLo - 4, 8);
             });
 
             ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'x'].forEach((segName, idx) => {
                 const sy = 472 + idx * 20;
-                addSocket(`SEG_RAW_${segName}`, 1602, sy, 'in', segName, `Commande Directe Segment '${segName}'`);
+                addSocket(`SEG_RAW_${segName}`, 1602, sy, 'in', segName, `Segment ${segName}`);
                 addLabel(segName, 1588, sy - 4, 8);
             });
 
@@ -1251,11 +1260,11 @@
             `);
             for (let p = 1; p <= 13; p++) {
                 const py = 678 + (p - 1) * 13.5;
-                addSocket(`DB25_${p}`, 1454, py, 'bidir', `P${p}`, `Connecteur D-Sub 25 Broche ${p}`);
+                addSocket(`DB25_${p}`, 1454, py, 'bidir', `P${p}`, `DB25 ${p}`);
                 addLabel(`${p}`, 1434, py - 4, 8);
             }
             addLabel('0V ⊥', 1554, 792, 9);
-            addSocket('DB25_GND', 1592, 796, 'out', '0V', 'Masse Système 0V (GND)');
+            addSocket('DB25_GND', 1592, 796, 'out', '0V', 'GND');
         }
 
         function createSevenSegSvg(prefix) {
@@ -1525,6 +1534,7 @@
                     let res = 1;
                     for (let i = 0; i < numIn; i++) res &= readPin(`AND${g}_I${i}`, 1);
                     setPin(`AND${g}_Y`, res);
+                    setPin(`AND${g}_YN`, res ? 0 : 1);
                 }
 
                 for (let g = 0; g < 7; g++) {
@@ -1533,10 +1543,12 @@
                         let res = 1;
                         for (let i = 0; i < numIn; i++) res &= readPin(`AND7_I${i}`, 1);
                         setPin('AND7_Y', res);
+                        setPin('AND7_YN', res ? 0 : 1);
                     } else {
                         let res = 0;
                         for (let i = 0; i < numIn; i++) res |= readPin(`OR${g}_I${i}`, 0);
                         setPin(`OR${g}_Y`, res);
+                        setPin(`OR${g}_YN`, res ? 0 : 1);
                     }
                 }
 
@@ -1602,7 +1614,7 @@
                 setPin('MUX_Y', muxOut);
                 setPin('MUX_YN', muxOut ? 0 : 1);
 
-                const dxEn = readPin('DX_EN', 1);
+                const dxEn = readPin('DX_EN', 0);
                 const dxSel = (readPin('DX_S1') << 1) | readPin('DX_S0');
                 for (let i = 0; i < 4; i++) setPin(`DX_O${i}`, (dxEn && dxSel === i) ? 1 : 0);
 
@@ -1747,7 +1759,9 @@
 
         function refreshBoardVisuals() {
             for (let i = 0; i < 8; i++) {
-                document.getElementById(`swLed_${i}`).classList.toggle('on', mainsOn && swState[i] === 1);
+                const val = swState[i];
+                document.getElementById(`swLed_${i}_Q`).classList.toggle('on', mainsOn && val === 1);
+                document.getElementById(`swLed_${i}_QN`).classList.toggle('on', mainsOn && val === 0);
             }
 
             ['LEDR', 'LEDY', 'LEDG'].forEach(pref => {
@@ -2010,7 +2024,6 @@
             renderOscilloscope();
         }, 50);
 
-        // Drag-to-pan on empty bench area (Mouse + Touch)
         const viewport = document.getElementById('benchViewport');
         let panning = false, panStartX = 0, panStartY = 0, scrollStartX = 0, scrollStartY = 0;
 
@@ -2031,7 +2044,6 @@
 
         window.addEventListener('resize', fitBoardToScreen);
 
-        // Initialize Board
         buildCompleteBoard();
         fitBoardToScreen();
         simulateStep();
